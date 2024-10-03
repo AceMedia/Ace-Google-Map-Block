@@ -38,6 +38,7 @@ jobs:
 
     - name: Push changes to the main branch using PAT
       env:
-        GITHUB_TOKEN: ${{ secrets.GH_PAT }}  # Using the PAT stored in repository secrets
+        GH_PAT: ${{ secrets.GH_PAT }}  # Reference your secret here
       run: |
-        git push https://$GITHUB_TOKEN@github.com/AceMedia/Ace-Google-Map-Block.git main
+        git remote set-url origin https://$GH_PAT@github.com/AceMedia/Ace-Google-Map-Block.git
+        git push origin main
