@@ -20,9 +20,15 @@ jobs:
         git config --global user.email "github-actions-bot@users.noreply.github.com"
         git config --global user.name "GitHub Actions Bot"
 
+    - name: Ensure CHANGELOG.md exists
+      run: |
+        if [ ! -f CHANGELOG.md ]; then
+          echo "# Changelog" > CHANGELOG.md
+        fi
+
     - name: Generate changelog based on commit history
       run: |
-        git log --no-merges --pretty=format:"%h %s" > changelog.txt
+        git log --no-merges --pretty=format:"* %h %s" > changelog.txt
         cat changelog.txt
 
     - name: Append changelog to CHANGELOG.md
@@ -33,8 +39,12 @@ jobs:
         git add CHANGELOG.md
         git commit -m "Update CHANGELOG.md for $GITHUB_REF"
 
-    - name: Push changes back to repository
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # GitHub Actions token automatically available
+    - name: Checkout default branch
       run: |
-        git push origin main
+        git checkout ${{ github.event.repository.default_branch }}  # Ensure we checkout the default branch
+
+    - name: Push changes back to the default branch
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Use the GitHub Actions token
+      run: |
+        git push https://$GITHUB_TOKEN@github.com/${{ github.repository }} ${{ github.event.repository.default_branch }}
