@@ -1,0 +1,25 @@
+name: Update Changelog
+
+on:
+  push:
+    tags:
+      - 'v*'  # Runs when a version tag is pushed (e.g., v1.0.0)
+
+jobs:
+  changelog:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Get commit messages
+      run: git log --pretty=format:"* %s" `git describe --tags --abbrev=0`..HEAD > commits.txt
+
+    - name: Append commit messages to changelog
+      run: |
+        echo "== Changelog ==" >> readme.txt
+        cat commits.txt >> readme.txt
+        git add readme.txt
+        git commit -m "Update changelog in readme"
+        git push origin main
