@@ -3,7 +3,7 @@ name: Update Changelog
 on:
   push:
     tags:
-      - 'v*'  # Runs when a version tag is pushed (e.g., v1.0.0)
+      - 'v*'  # Runs when a version tag is pushed (e.g., v0.421)
 
 jobs:
   changelog:
@@ -13,7 +13,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
       with:
-        fetch-depth: 0  # Ensure full history is available so tags can be created/pushed.
+        fetch-depth: 0  # Fetch full history for tags and branches
 
     - name: Set Git user information
       run: |
@@ -30,8 +30,10 @@ jobs:
         git add readme.txt
         git commit -m "Update changelog in readme"
 
-    - name: Push the changes to the correct branch
+    - name: Checkout the main branch
       run: |
-        # Checkout the main branch explicitly
-        git checkout main
-        git push origin main
+        git fetch origin
+        git checkout main  # Checkout main branch explicitly
+
+    - name: Push changes to the main branch
+      run: git push origin main
