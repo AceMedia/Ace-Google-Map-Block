@@ -44,7 +44,7 @@ jobs:
 
     - name: Push changes back to main branch
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GH_PAT }}
       run: |
         git pull origin main  # Pull latest changes before pushing
         git push origin main  # Push changes
