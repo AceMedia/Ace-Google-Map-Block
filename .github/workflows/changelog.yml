@@ -16,6 +16,11 @@ jobs:
     - name: Get commit messages
       run: git log --pretty=format:"* %s" `git describe --tags --abbrev=0`..HEAD > commits.txt
 
+    - name: Set Git user information
+      run: |
+        git config --global user.email "shane@acemedia.ninja"
+        git config --global user.name "AceMedia"
+
     - name: Append commit messages to changelog
       run: |
         echo "== Changelog ==" >> readme.txt
