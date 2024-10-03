@@ -17,8 +17,8 @@ jobs:
 
     - name: Set Git user information
       run: |
-        git config --global user.email "shane@acemedia.ninja"
-        git config --global user.name "AceMedia"
+        git config --global user.email "github-actions-bot@users.noreply.github.com"
+        git config --global user.name "GitHub Actions Bot"
 
     - name: Generate changelog based on commit history
       run: |
@@ -30,3 +30,11 @@ jobs:
         echo "## Version $GITHUB_REF - $(date +'%Y-%m-%d')" >> CHANGELOG.md
         cat changelog.txt >> CHANGELOG.md
         echo "" >> CHANGELOG.md
+        git add CHANGELOG.md
+        git commit -m "Update CHANGELOG.md for $GITHUB_REF"
+
+    - name: Push changes back to repository
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # GitHub Actions token automatically available
+      run: |
+        git push origin main
