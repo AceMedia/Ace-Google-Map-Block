@@ -12,14 +12,16 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
-
-    - name: Get commit messages
-      run: git log --pretty=format:"* %s" `git describe --tags --abbrev=0`..HEAD > commits.txt
+      with:
+        fetch-depth: 0  # Ensure full history is available so tags can be created/pushed.
 
     - name: Set Git user information
       run: |
         git config --global user.email "shane@acemedia.ninja"
         git config --global user.name "AceMedia"
+
+    - name: Get commit messages
+      run: git log --pretty=format:"* %s" `git describe --tags --abbrev=0`..HEAD > commits.txt
 
     - name: Append commit messages to changelog
       run: |
@@ -27,4 +29,9 @@ jobs:
         cat commits.txt >> readme.txt
         git add readme.txt
         git commit -m "Update changelog in readme"
+
+    - name: Push the changes to the correct branch
+      run: |
+        # Checkout the main branch explicitly
+        git checkout main
         git push origin main
