@@ -3,7 +3,7 @@ name: Update Changelog
 on:
   push:
     tags:
-      - 'v*'  # Runs when a version tag is pushed (e.g., v0.421)
+      - 'v*'  # Runs when a version tag is pushed (e.g., v0.423)
 
 jobs:
   changelog:
@@ -20,20 +20,24 @@ jobs:
         git config --global user.email "shane@acemedia.ninja"
         git config --global user.name "AceMedia"
 
-    - name: Get commit messages
+    - name: Get commit messages since last tag
       run: git log --pretty=format:"* %s" `git describe --tags --abbrev=0`..HEAD > commits.txt
 
-    - name: Append commit messages to changelog
+    - name: Append commit messages to CHANGELOG.md
       run: |
-        echo "== Changelog ==" >> readme.txt
-        cat commits.txt >> readme.txt
-        git add readme.txt
-        git commit -m "Update changelog in readme"
+        echo "## $(date +'%Y-%m-%d') - Version $GITHUB_REF" >> CHANGELOG.md
+        cat commits.txt >> CHANGELOG.md
+        echo "" >> CHANGELOG.md
+        git add CHANGELOG.md
+        git commit -m "Update changelog for $GITHUB_REF"
 
     - name: Checkout the main branch
       run: |
         git fetch origin
-        git checkout main  # Checkout main branch explicitly
+        git checkout main
 
-    - name: Push changes to the main branch
-      run: git push origin main
+    - name: Push changes to the main branch using PAT
+      env:
+        GITHUB_TOKEN: ${{ secrets.GH_PAT }}  # Using the PAT stored in repository secrets
+      run: |
+        git push https://$GITHUB_TOKEN@github.com/AceMedia/Ace-Google-Map-Block.git main
