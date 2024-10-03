@@ -10,9 +10,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
+    - name: Checkout main branch
       uses: actions/checkout@v2
       with:
+        ref: main  # Checkout the main branch
         fetch-depth: 0  # Fetch full history to capture all commits
 
     - name: Set Git user information
@@ -39,12 +40,9 @@ jobs:
         git add CHANGELOG.md
         git commit -m "Update CHANGELOG.md for $GITHUB_REF"
 
-    - name: Checkout main branch
-      run: git checkout main
-
-    - name: Push changes back to main branch
+    - name: Push changes back to main branch using PAT
       env:
-        GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+        GH_PAT: ${{ secrets.GH_PAT }}
       run: |
         git pull origin main  # Pull latest changes before pushing
-        git push origin main  # Push changes
+        git push https://$GH_PAT@github.com/${{ github.repository }} main  # Push using PAT
