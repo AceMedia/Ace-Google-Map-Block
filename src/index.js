@@ -4,7 +4,7 @@ import { InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
 
 registerBlockType('my-block/google-map', {
-    title: 'Google Map Block',
+    title: 'Ace Google Map Block',
     icon: 'location-alt',
     category: 'widgets',
     attributes: {
