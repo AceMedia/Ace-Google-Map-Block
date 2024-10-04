@@ -38,8 +38,8 @@ jobs:
           # Replace the old changelog for this version
           sed -i "/## Version $version/,/^$/c\\$new_changelog" CHANGELOG.md
         else
-          # Prepend the new changelog at the top
-          echo -e "$new_changelog\n$(cat CHANGELOG.md)" > CHANGELOG.md
+          # Append the new changelog after the "# Changelog" title
+          sed -i '/# Changelog/a\'"$new_changelog" CHANGELOG.md
         fi
 
     - name: Commit and push changes
