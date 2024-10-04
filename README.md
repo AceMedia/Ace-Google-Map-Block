@@ -1,8 +1,8 @@
-=== Ace Map Block ===
-Contributors:      Shane Rounce of AceMedia.ninja
-Tags:              block, map, google, street view, places, wordpress, gutenberg
-Tested up to:      6.6
-Stable tag:        1.0.0
+=== Ace Map Block === 
+Contributors:      Shane Rounce of AceMedia.ninja 
+Tags:              block, map, google, street view, places, wordpress, gutenberg 
+Tested up to:      6.6 
+Stable tag:        1.0.0 
 
 Interactive Google Maps block with Street View and Places Autocomplete, fully integrated within the WordPress block editor.
 
