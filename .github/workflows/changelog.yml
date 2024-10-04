@@ -29,7 +29,7 @@ jobs:
 
     - name: Generate changelog based on commit history
       run: |
-        git log --no-merges --pretty=format:"* %h %s" > changelog.txt
+        git log --no-merges --pretty=format:"* %h - %ci - %s" > changelog.txt
         cat changelog.txt
 
     - name: Append changelog to CHANGELOG.md
