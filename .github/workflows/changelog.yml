@@ -45,6 +45,10 @@ jobs:
       env:
         GH_PAT: ${{ secrets.GH_PAT }}
       run: |
-        git pull origin main --rebase  # Pull latest changes before pushing
+        for i in {1..5}; do
+          git pull origin main --rebase && break || sleep 10
+        done
         git commit --amend --no-edit  # Amend the commit with changelog changes
-        git push --force-with-lease https://$GH_PAT@github.com/${{ github.repository }} main  # Push using PAT
+        for i in {1..5}; do
+          git push --force-with-lease https://$GH_PAT@github.com/${{ github.repository }} main && break || sleep 10
+        done
