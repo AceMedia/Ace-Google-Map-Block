@@ -17,20 +17,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-/**
- * Registers the block using the metadata loaded from the `block.json` file.
- * Behind the scenes, it registers also all assets so they can be enqueued
- * through the block editor in the corresponding context.
- *
- * @see https://developer.wordpress.org/reference/functions/register_block_type/
- */
 function create_block_ace_map_block_block_init() {
 	register_block_type( __DIR__ . '/build' );
 }
 add_action( 'init', 'create_block_ace_map_block_block_init' );
 
-
-// Create Options Page for API Key and Default Settings
 function ace_map_block_register_settings() {
     register_setting('ace_map_block_settings', 'ace_map_block_api_key');
     register_setting('ace_map_block_settings', 'ace_map_block_default_city');
@@ -47,8 +38,10 @@ function ace_map_block_settings_page() {
     <div class="wrap">
         <h1>Google Maps Block Settings</h1>
         <form method="post" action="options.php">
-            <?php settings_fields('ace_map_block_settings'); ?>
-            <?php do_settings_sections('ace_map_block_settings'); ?>
+            <?php
+            settings_fields('ace_map_block_settings');
+            do_settings_sections('ace_map_block_settings');
+            ?>
             <table class="form-table">
                 <tr valign="top">
                     <th scope="row">Google Maps API Key</th>
@@ -65,48 +58,40 @@ function ace_map_block_settings_page() {
     <?php
 }
 
-
-// Enqueue Google Maps API with Places Library in the block editor
-function ace_map_block_enqueue_google_maps_editor() {
-    $api_key = get_option('ace_map_block_api_key'); // Assuming API key is stored in options
+function ace_map_block_enqueue_google_maps_scripts($is_editor = false) {
+    $api_key = get_option('ace_map_block_api_key');
     if ($api_key) {
+        $url = 'https://maps.googleapis.com/maps/api/js?key=' . esc_attr($api_key);
+        if ($is_editor) {
+            $url .= '&libraries=places';
+        }
         wp_enqueue_script(
             'google-maps-api',
-            'https://maps.googleapis.com/maps/api/js?key=' . esc_attr($api_key) . '&libraries=places', // Load the Places library
+            $url,
             array(),
             null,
             true
         );
+    } else {
+        error_log('Google Maps API key is not set.');
+        return;
     }
-    // Enqueue the block editor script
-    wp_enqueue_script(
-        'ace-map-block-editor-js',
-        plugins_url('build/index.js', __FILE__),
-        array('wp-blocks', 'wp-element', 'wp-editor'),
-        filemtime(plugin_dir_path(__FILE__) . 'build/index.js')
-    );
-}
-add_action('enqueue_block_editor_assets', 'ace_map_block_enqueue_google_maps_editor'); // For block editor (admin)
 
-// Enqueue Google Maps API for the frontend (without Places Library)
-function ace_map_block_enqueue_google_maps_frontend() {
-    $api_key = get_option('ace_map_block_api_key'); // Assuming API key is stored in options
-    if ($api_key) {
-        wp_enqueue_script(
-            'google-maps-api',
-            'https://maps.googleapis.com/maps/api/js?key=' . esc_attr($api_key), // No need for Places library on the frontend
-            array(),
-            null,
-            true
-        );
-    }
-    // Enqueue the frontend script for rendering the map
+    $script_handle = $is_editor ? 'ace-map-block-editor-js' : 'ace-map-block-frontend';
+    $script_file = $is_editor ? 'build/index.js' : 'build/view.js';
+    $dependencies = $is_editor ? array('wp-blocks', 'wp-element', 'wp-editor') : array('google-maps-api');
+    
     wp_enqueue_script(
-        'ace-map-block-frontend',
-        plugins_url('build/view.js', __FILE__),
-        array('google-maps-api'), // Ensure Google Maps API is loaded first
-        filemtime(plugin_dir_path(__FILE__) . 'build/view.js'),
+        $script_handle,
+        plugins_url($script_file, __FILE__),
+        $dependencies,
+        filemtime(plugin_dir_path(__FILE__) . $script_file),
         true
     );
 }
-add_action('wp_enqueue_scripts', 'ace_map_block_enqueue_google_maps_frontend'); // For frontend
+
+add_action('enqueue_block_editor_assets', function() {
+    ace_map_block_enqueue_google_maps_scripts(true);
+});
+
+add_action('wp_enqueue_scripts', 'ace_map_block_enqueue_google_maps_scripts');
