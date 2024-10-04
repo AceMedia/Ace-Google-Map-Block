@@ -7,9 +7,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const isStreetView = mapElement.dataset.isStreetView === 'true';
         const streetViewHeading = parseFloat(mapElement.dataset.svHeading);
         const streetViewPitch = parseFloat(mapElement.dataset.svPitch);
+        const zoom = parseInt(mapElement.dataset.zoom, 10) || 10;
 
         const map = new google.maps.Map(mapElement, {
-            zoom: 10,
+            zoom: zoom,
             center: { lat: initialLat, lng: initialLng },
         });
 
@@ -44,38 +45,5 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         // Track the last position to prevent redundant updates
-        let lastLat = initialLat;
-        let lastLng = initialLng;
-
-        // Ensure updates only happen on explicit Street View interaction
-        panorama.addListener('position_changed', function() {
-            const svPosition = panorama.getPosition();
-            if (svPosition && (svPosition.lat() !== lastLat || svPosition.lng() !== lastLng)) {
-                lastLat = svPosition.lat();
-                lastLng = svPosition.lng();
-
-                // Update the address only if the user explicitly moves in Street View
-                if (window.updateStreetViewAddress) {
-                    window.updateStreetViewAddress(lastLat, lastLng);
-                }
-            }
-        });
-
-        // Handle selecting a new place and updating the map/Street View
-        const placeSelectHandler = (newLat, newLng) => {
-            lastLat = newLat;
-            lastLng = newLng;
-
-            map.setCenter({ lat: newLat, lng: newLng });
-            marker.setPosition({ lat: newLat, lng: newLng });
-
-            // Only update Street View if it's visible
-            if (panorama.getVisible()) {
-                panorama.setPosition({ lat: newLat, lng: newLng });
-            }
-        };
-
-        // Bind this handler to the autocomplete functionality in your block editor
-        window.onPlaceSelected = placeSelectHandler;
     });
 });

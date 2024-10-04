@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from '@wordpress/element';
 import { registerBlockType } from '@wordpress/blocks';
 import { InspectorControls } from '@wordpress/block-editor';
-import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
+import { PanelBody, TextControl, ToggleControl, RangeControl } from '@wordpress/components';
 
 registerBlockType('my-block/google-map', {
     title: 'Ace Google Map Block',
@@ -14,6 +14,7 @@ registerBlockType('my-block/google-map', {
         streetViewHeading: { type: 'number', default: 0 },
         streetViewPitch: { type: 'number', default: 0 },
         isStreetView: { type: 'boolean', default: false },
+        zoom: { type: 'number', default: 8 },
     },
     edit: ({ attributes, setAttributes }) => {
         const {
@@ -23,6 +24,7 @@ registerBlockType('my-block/google-map', {
             streetViewHeading,
             streetViewPitch,
             isStreetView,
+            zoom,
         } = attributes;
 
         const mapRef = useRef(null);
@@ -68,7 +70,7 @@ registerBlockType('my-block/google-map', {
         useEffect(() => {
             if (mapRef.current && !map) {
                 const googleMap = new google.maps.Map(mapRef.current, {
-                    zoom: 10,
+                    zoom: zoom,
                     center: { lat, lng },
                 });
                 setMap(googleMap);
@@ -109,6 +111,11 @@ registerBlockType('my-block/google-map', {
                     streetViewPanorama.setVisible(false); // Exit Street View if a pin is placed
                 });
 
+                // Listen for zoom changes on the map to update the zoom attribute
+                googleMap.addListener('zoom_changed', () => {
+                    setAttributes({ zoom: googleMap.getZoom() });
+                });
+
                 if (searchRef.current) {
                     const autocomplete = new google.maps.places.Autocomplete(searchRef.current);
                     autocomplete.bindTo('bounds', googleMap);
@@ -147,6 +154,12 @@ registerBlockType('my-block/google-map', {
             }
         }, [mapRef, map]);
 
+        useEffect(() => {
+            if (map) {
+                map.setZoom(zoom);
+            }
+        }, [zoom]);
+
         return (
             <>
                 <InspectorControls>
@@ -165,6 +178,13 @@ registerBlockType('my-block/google-map', {
                             label="Address"
                             value={address}
                             disabled // Make the address field read-only
+                        />
+                        <RangeControl
+                            label="Zoom Level"
+                            value={zoom}
+                            onChange={(value) => setAttributes({ zoom: value })}
+                            min={1}
+                            max={20}
                         />
                         <ToggleControl
                             label="Is Street View?"
@@ -214,14 +234,14 @@ registerBlockType('my-block/google-map', {
                     {/* Map */}
                     <div
                         ref={mapRef}
-                        style={{ width: '100%', height: '400px', backgroundColor: '#e5e5e5' }}
+                        style={{ width: '100%', height: '600px', backgroundColor: '#e5e5e5' }}
                     ></div>
                 </div>
             </>
         );
     },
     save: ({ attributes }) => {
-        const { lat, lng, address, streetViewHeading, streetViewPitch, isStreetView } = attributes;
+        const { lat, lng, address, streetViewHeading, streetViewPitch, isStreetView, zoom } = attributes;
 
         return (
             <div>
@@ -232,7 +252,8 @@ registerBlockType('my-block/google-map', {
                     data-sv-heading={streetViewHeading}
                     data-sv-pitch={streetViewPitch}
                     data-is-street-view={isStreetView}
-                    style={{ width: '100%', height: '400px' }}
+                    data-zoom={zoom}
+                    style={{ width: '100%', height: '600px' }}
                 ></div>
                 <p>{address}</p>
             </div>
