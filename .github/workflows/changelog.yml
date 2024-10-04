@@ -29,7 +29,8 @@ jobs:
 
     - name: Generate changelog based on commit history
       run: |
-        git log --no-merges --pretty=format:"* _%h_ - **%cd** - %s" --date=format:'%Y-%m-%d %H:%M:%S' > changelog.txt
+        PREV_TAG=$(git describe --tags --abbrev=0 HEAD^)
+        git log $PREV_TAG..HEAD --no-merges --pretty=format:"* _%h_ - **%cd** - %s" --date=format:'%Y-%m-%d %H:%M:%S' > changelog.txt
         cat changelog.txt
 
     - name: Append changelog to CHANGELOG.md
