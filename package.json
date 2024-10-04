@@ -1,8 +1,8 @@
 {
 	"name": "ace-map-block",
-	"version": "0.1.0",
-	"description": "Example block scaffolded with Create Block tool.",
-	"author": "The WordPress Contributors",
+	"version": "0.421.0",
+	"description": "Ace Google Maps.",
+	"author": "Shane Rounce",
 	"license": "GPL-2.0-or-later",
 	"main": "build/index.js",
 	"scripts": {
