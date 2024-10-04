@@ -1,4 +1,4 @@
-name: Generate Changelog
+name: Generate Changelog and Build Plugin
 
 on:
   push:
@@ -39,11 +39,11 @@ jobs:
         cat changelog.txt >> CHANGELOG.md
         echo "" >> CHANGELOG.md
         git add CHANGELOG.md
-        git commit -m "Update CHANGELOG.md for $GITHUB_REF"
+        git commit --amend --no-edit
 
     - name: Push changes back to main branch using PAT
       env:
         GH_PAT: ${{ secrets.GH_PAT }}
       run: |
-        git pull origin main  # Pull latest changes before pushing
-        git push https://$GH_PAT@github.com/${{ github.repository }} main  # Push using PAT
+        git pull origin main --rebase  # Pull latest changes before pushing
+        git push --force-with-lease https://$GH_PAT@github.com/${{ github.repository }} main  # Push using PAT
