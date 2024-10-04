@@ -36,7 +36,8 @@ jobs:
       run: |
         version="${GITHUB_REF#refs/tags/}"
         timestamp=$(date +"%Y-%m-%d %H:%M:%S")
-        new_changelog="## Version $version - **$timestamp**\n\n$(cat changelog.txt | sed 's/[&/\*]/\\&/g' | sed 's/[\\/]/\\\//g')\n"
+        # Escape special characters in the changelog content
+        new_changelog=$(printf "## Version %s - **%s**\n\n%s\n" "$version" "$timestamp" "$(cat changelog.txt | sed 's/[&/\*]/\\&/g' | sed 's/[\\/]/\\\\\//g')")
         # Insert new changelog after the first occurrence of "# Changelog"
         sed -i '/# Changelog/a '"$new_changelog" CHANGELOG.md
         git add CHANGELOG.md
