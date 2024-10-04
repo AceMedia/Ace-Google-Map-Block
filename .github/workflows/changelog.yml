@@ -39,6 +39,7 @@ jobs:
         cat changelog.txt >> CHANGELOG.md
         echo "" >> CHANGELOG.md
         git add CHANGELOG.md
+        git commit -m "Update CHANGELOG.md with latest changes"
 
     - name: Pull latest changes and amend commit
       env:
