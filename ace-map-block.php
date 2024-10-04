@@ -88,6 +88,31 @@ function ace_map_block_enqueue_google_maps_scripts($is_editor = false) {
         filemtime(plugin_dir_path(__FILE__) . $script_file),
         true
     );
+
+    // Read custom styles from the styles directory and uploads directory
+    $styles = array();
+    $styles_dirs = array(
+        plugin_dir_path(__FILE__) . 'styles/',
+        wp_upload_dir()['basedir'] . '/map-styles/'
+    );
+
+    foreach ($styles_dirs as $styles_dir) {
+        if (is_dir($styles_dir)) {
+            $files = scandir($styles_dir);
+            foreach ($files as $file) {
+                if (pathinfo($file, PATHINFO_EXTENSION) === 'json') {
+                    $style_name = pathinfo($file, PATHINFO_FILENAME);
+                    $style_content = file_get_contents($styles_dir . $file);
+                    $styles[$style_name] = json_decode($style_content, true);
+                }
+            }
+        }
+    }
+
+    wp_localize_script($script_handle, 'aceMapBlock', array(
+        'apiKey' => $api_key,
+        'styles' => $styles,
+    ));
 }
 
 add_action('enqueue_block_editor_assets', function() {

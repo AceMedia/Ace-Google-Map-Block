@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from '@wordpress/element';
 import { registerBlockType } from '@wordpress/blocks';
 import { InspectorControls } from '@wordpress/block-editor';
-import { PanelBody, TextControl, ToggleControl, RangeControl } from '@wordpress/components';
+import { PanelBody, TextControl, ToggleControl, RangeControl, SelectControl } from '@wordpress/components';
 
 registerBlockType('my-block/google-map', {
     title: 'Ace Google Map Block',
@@ -15,6 +15,7 @@ registerBlockType('my-block/google-map', {
         streetViewPitch: { type: 'number', default: 0 },
         isStreetView: { type: 'boolean', default: false },
         zoom: { type: 'number', default: 8 },
+        mapStyle: { type: 'string', default: '' },
     },
     edit: ({ attributes, setAttributes }) => {
         const {
@@ -25,6 +26,7 @@ registerBlockType('my-block/google-map', {
             streetViewPitch,
             isStreetView,
             zoom,
+            mapStyle,
         } = attributes;
 
         const mapRef = useRef(null);
@@ -72,6 +74,7 @@ registerBlockType('my-block/google-map', {
                 const googleMap = new google.maps.Map(mapRef.current, {
                     zoom: zoom,
                     center: { lat, lng },
+                    styles: aceMapBlock.styles[mapStyle] || null,
                 });
                 setMap(googleMap);
 
@@ -152,13 +155,19 @@ registerBlockType('my-block/google-map', {
                     });
                 }
             }
-        }, [mapRef, map]);
+        }, [mapRef, map, mapStyle]);
 
         useEffect(() => {
             if (map) {
                 map.setZoom(zoom);
             }
         }, [zoom]);
+
+        useEffect(() => {
+            if (map) {
+                map.setOptions({ styles: aceMapBlock.styles[mapStyle] || null });
+            }
+        }, [mapStyle]);
 
         return (
             <>
@@ -217,6 +226,15 @@ registerBlockType('my-block/google-map', {
                                 />
                             </>
                         )}
+                        <SelectControl
+                            label="Map Style"
+                            value={mapStyle}
+                            options={[
+                                { label: 'Default', value: '' },
+                                ...Object.keys(aceMapBlock.styles).map(style => ({ label: style, value: style }))
+                            ]}
+                            onChange={(value) => setAttributes({ mapStyle: value })}
+                        />
                     </PanelBody>
                 </InspectorControls>
                 <div>
@@ -241,8 +259,8 @@ registerBlockType('my-block/google-map', {
         );
     },
     save: ({ attributes }) => {
-        const { lat, lng, address, streetViewHeading, streetViewPitch, isStreetView, zoom } = attributes;
-
+        const { lat, lng, address, streetViewHeading, streetViewPitch, isStreetView, zoom, mapStyle } = attributes;
+    
         return (
             <div>
                 <div
@@ -253,6 +271,7 @@ registerBlockType('my-block/google-map', {
                     data-sv-pitch={streetViewPitch}
                     data-is-street-view={isStreetView}
                     data-zoom={zoom}
+                    data-map-style={mapStyle}
                     style={{ width: '100%', height: '600px' }}
                 ></div>
                 <p>{address}</p>

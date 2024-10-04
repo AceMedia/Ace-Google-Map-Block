@@ -8,11 +8,18 @@ document.addEventListener('DOMContentLoaded', function() {
         const streetViewHeading = parseFloat(mapElement.dataset.svHeading);
         const streetViewPitch = parseFloat(mapElement.dataset.svPitch);
         const zoom = parseInt(mapElement.dataset.zoom, 10) || 10;
+        const mapStyle = mapElement.dataset.mapStyle;
 
-        const map = new google.maps.Map(mapElement, {
+        console.log('Map Style:', mapStyle);
+        console.log('Available Styles:', aceMapBlock.styles);
+
+        const mapOptions = {
             zoom: zoom,
             center: { lat: initialLat, lng: initialLng },
-        });
+            styles: aceMapBlock.styles[mapStyle] || null,
+        };
+
+        const map = new google.maps.Map(mapElement, mapOptions);
 
         const marker = new google.maps.Marker({
             position: { lat: initialLat, lng: initialLng },
