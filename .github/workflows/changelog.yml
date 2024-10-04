@@ -24,7 +24,7 @@ jobs:
     - name: Ensure CHANGELOG.md exists
       run: |
         if [ ! -f CHANGELOG.md ]; then
-          echo "# Changelog" > CHANGELOG.md
+          touch CHANGELOG.md
         fi
 
     - name: Generate changelog based on commit history
@@ -34,12 +34,9 @@ jobs:
 
     - name: Append changelog to CHANGELOG.md
       run: |
-        version="${GITHUB_REF#refs/tags/}"
-        timestamp=$(date +"%Y-%m-%d %H:%M:%S")
-        # Escape special characters in the changelog content
-        new_changelog=$(printf "## Version %s - **%s**\n\n%s\n" "$version" "$timestamp" "$(cat changelog.txt | sed 's/[&/\*]/\\&/g' | sed 's/[\\/]/\\\\\//g')")
-        # Insert new changelog after the first occurrence of "# Changelog"
-        sed -i '/# Changelog/a '"$new_changelog" CHANGELOG.md
+        echo "## Version $GITHUB_REF - $(date +'%Y-%m-%d')" >> CHANGELOG.md
+        cat changelog.txt >> CHANGELOG.md
+        echo "" >> CHANGELOG.md
         git add CHANGELOG.md
         git commit -m "Update CHANGELOG.md for $GITHUB_REF"
 
