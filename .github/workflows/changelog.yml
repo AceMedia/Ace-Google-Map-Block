@@ -1,4 +1,4 @@
-name: Generate Changelog and Build Plugin
+name: Generate Changelog
 
 on:
   push:
@@ -39,16 +39,11 @@ jobs:
         cat changelog.txt >> CHANGELOG.md
         echo "" >> CHANGELOG.md
         git add CHANGELOG.md
-        git commit -m "Update CHANGELOG.md with latest changes"
+        git commit -m "Update CHANGELOG.md for $GITHUB_REF"
 
-    - name: Pull latest changes and amend commit
+    - name: Push changes back to main branch using PAT
       env:
         GH_PAT: ${{ secrets.GH_PAT }}
       run: |
-        for i in {1..5}; do
-          git pull origin main --rebase && break || sleep 10
-        done
-        git commit --amend --no-edit  # Amend the commit with changelog changes
-        for i in {1..5}; do
-          git push --force-with-lease https://$GH_PAT@github.com/${{ github.repository }} main && break || sleep 10
-        done
+        git pull origin main  # Pull latest changes before pushing
+        git push https://$GH_PAT@github.com/${{ github.repository }} main  # Push using PAT
