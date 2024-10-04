@@ -3,8 +3,6 @@ Contributors:      Shane Rounce of AceMedia.ninja
 Tags:              block, map, google, street view, places, wordpress, gutenberg
 Tested up to:      6.6
 Stable tag:        1.0.0
-License:           GPL-2.0-or-later
-License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 
 Interactive Google Maps block with Street View and Places Autocomplete, fully integrated within the WordPress block editor.
 
