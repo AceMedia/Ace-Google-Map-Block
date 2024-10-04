@@ -36,7 +36,7 @@ jobs:
       run: |
         version="${GITHUB_REF#refs/tags/}"
         timestamp=$(date +"%Y-%m-%d %H:%M:%S")
-        new_changelog="## Version $version - **$timestamp**\n\n$(cat changelog.txt | sed 's/[&/\*]/\\&/g')\n"
+        new_changelog="## Version $version - **$timestamp**\n\n$(cat changelog.txt | sed 's/[&/\*]/\\&/g' | sed 's/[\\/]/\\\//g')\n"
         # Insert new changelog after the first occurrence of "# Changelog"
         sed -i '/# Changelog/a '"$new_changelog" CHANGELOG.md
         git add CHANGELOG.md
