@@ -29,24 +29,22 @@ jobs:
 
     - name: Generate changelog based on commit history
       run: |
+        git log --no-merges --pretty=format:"* _%h_ - **%cd** - %s" --date=format:'%Y-%m-%d %H:%M:%S' > changelog.txt
+        cat changelog.txt
+
+    - name: Append changelog to CHANGELOG.md
+      run: |
         version="${GITHUB_REF#refs/tags/}"
         timestamp=$(date +"%Y-%m-%d %H:%M:%S")
-        new_changelog="## Version $version - **$timestamp**\n\n$(git log --no-merges --pretty=format:'* _%h_ - **%cd** - %s' --date=format:'%Y-%m-%d %H:%M:%S')\n"
+        new_changelog="## Version $version - **$timestamp**\n\n$(cat changelog.txt)\n"
+        # Insert new changelog after the first occurrence of "# Changelog"
+        sed -i '/# Changelog/a\'"$new_changelog" CHANGELOG.md
+        git add CHANGELOG.md
+        git commit -m "Update CHANGELOG.md for $GITHUB_REF"
 
-        # Check if the changelog already contains this version
-        if grep -q "## Version $version" CHANGELOG.md; then
-          # Replace the old changelog for this version
-          sed -i "/## Version $version/,/^$/c\\$new_changelog" CHANGELOG.md
-        else
-          # Append the new changelog after the "# Changelog" title
-          sed -i '/# Changelog/a\'"$new_changelog" CHANGELOG.md
-        fi
-
-    - name: Commit and push changes
+    - name: Push changes back to main branch using PAT
       env:
         GH_PAT: ${{ secrets.GH_PAT }}
       run: |
-        git add CHANGELOG.md
-        git commit -m "Update CHANGELOG.md for $GITHUB_REF"
-        git pull origin main  # Ensure you're up to date before pushing
+        git pull origin main  # Pull latest changes before pushing
         git push https://$GH_PAT@github.com/${{ github.repository }} main  # Push using PAT
