@@ -36,9 +36,7 @@ jobs:
         # Check if the changelog already contains this version
         if grep -q "## Version $version" CHANGELOG.md; then
           # Replace the old changelog for this version
-          sed -i "/## Version $version/,\$!b;//!{//!d};a\\
-$new_changelog
-" CHANGELOG.md
+          sed -i "/## Version $version/,/^$/c\\$new_changelog" CHANGELOG.md
         else
           # Prepend the new changelog at the top
           echo -e "$new_changelog\n$(cat CHANGELOG.md)" > CHANGELOG.md
