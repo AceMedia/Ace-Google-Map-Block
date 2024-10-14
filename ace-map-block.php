@@ -17,6 +17,8 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly.
 }
 
+include_once plugin_dir_path( __FILE__ ) . 'update.php';
+
 function create_block_ace_map_block_block_init() {
     register_block_type( __DIR__ . '/build' );
 }
