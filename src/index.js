@@ -94,7 +94,6 @@ registerBlockType('my-block/google-map', {
         useEffect(() => {
             // Initialize the map if it hasn't been initialized yet
             if (mapRef.current && !map) {
-                // Create the map only once
                 const googleMap = new google.maps.Map(mapRef.current, {
                     zoomControl: !disableZoom,
                     center: { lat, lng },
@@ -105,7 +104,6 @@ registerBlockType('my-block/google-map', {
                 });
                 setMap(googleMap);
         
-                // Create a draggable marker and set its initial position
                 const mapMarker = new google.maps.Marker({
                     position: { lat, lng },
                     map: googleMap,
@@ -113,21 +111,7 @@ registerBlockType('my-block/google-map', {
                 });
                 setMarker(mapMarker);
         
-                // Add event listeners for marker drag and map click
-                mapMarker.addListener('dragend', () => {
-                    const newLat = mapMarker.getPosition().lat();
-                    const newLng = mapMarker.getPosition().lng();
-                    setAttributes({ lat: newLat, lng: newLng });
-                    reverseGeocode(newLat, newLng);
-                });
-        
                 googleMap.addListener('click', (e) => {
-                    const blockElement = mapRef.current.closest('.wp-block[data-block]');
-                    // Check if the block has the 'is-selected' class
-                    if (!blockElement || !blockElement.classList.contains('is-selected')) {
-                        return; // Do nothing if the block is not selected
-                    }
-        
                     const clickedLat = e.latLng.lat();
                     const clickedLng = e.latLng.lng();
                     mapMarker.setPosition({ lat: clickedLat, lng: clickedLng });
@@ -139,24 +123,51 @@ registerBlockType('my-block/google-map', {
                     setAttributes({ zoom: googleMap.getZoom() });
                 });
         
-                const streetViewPanorama = googleMap.getStreetView();
-                setPanorama(streetViewPanorama);
+                // Initialize the Places Autocomplete service
+                const inputElement = document.querySelector('.autocomplete-search');
+
+                console.log("Input element found:", inputElement);
         
-                streetViewPanorama.addListener('visible_changed', () => {
-                    const isVisible = streetViewPanorama.getVisible();
-                    setAttributes({ isStreetView: isVisible });
-                });
+                if (inputElement) {
+                    console.log("Input element found:", inputElement);
         
-                if (isStreetView) {
-                    streetViewPanorama.setPosition({ lat, lng });
-                    streetViewPanorama.setPov({ heading: streetViewHeading, pitch: streetViewPitch });
-                    streetViewPanorama.setVisible(true);
-                    setupStreetViewListeners(streetViewPanorama);
+                    // Initialize the Google Places Autocomplete
+                    const autocomplete = new google.maps.places.Autocomplete(inputElement);
+                    autocomplete.bindTo('bounds', googleMap); // Bind autocomplete to the current map bounds
+        
+                    autocomplete.addListener('place_changed', () => {
+                        const place = autocomplete.getPlace();
+                        console.log('Autocomplete place changed:', place);
+        
+                        if (!place.geometry) {
+                            console.log('No geometry available for this place');
+                            return;
+                        }
+        
+                        // Update map and marker with new place
+                        const newLat = place.geometry.location.lat();
+                        const newLng = place.geometry.location.lng();
+                        googleMap.setCenter({ lat: newLat, lng: newLng });
+                        mapMarker.setPosition({ lat: newLat, lng: newLng });
+        
+                        // Update block attributes with the new place information
+                        setAttributes({
+                            lat: newLat,
+                            lng: newLng,
+                            address: place.formatted_address || '',
+                        });
+        
+                        console.log(`New Coordinates: Lat ${newLat}, Lng ${newLng}, Address: ${place.formatted_address}`);
+                    });
+                } else {
+                    console.log("Could not find the input element with class '.autocomplete-search'");
                 }
             }
-        }, []);
+        }, [map, lat, lng, zoom, mapStyle, disableZoom, disableLabels, disableUIButtons]);
         
-    
+        
+        
+        
         useEffect(() => {
             // Reinitialize the map when toggling the "Map as Background" or Street View
             if (mapRef.current && mapAsBackground !== null) {
@@ -169,14 +180,14 @@ registerBlockType('my-block/google-map', {
                     disableDefaultUI: disableUIButtons,
                 });
                 setMap(googleMap);
-    
+        
                 const mapMarker = new google.maps.Marker({
                     position: { lat, lng },
                     map: googleMap,
                     draggable: true,
                 });
                 setMarker(mapMarker);
-    
+        
                 // Handle marker drag end event
                 mapMarker.addListener('dragend', () => {
                     const newLat = mapMarker.getPosition().lat();
@@ -184,7 +195,7 @@ registerBlockType('my-block/google-map', {
                     setAttributes({ lat: newLat, lng: newLng });
                     reverseGeocode(newLat, newLng);
                 });
-    
+        
                 // Handle map click event
                 googleMap.addListener('click', (e) => {
                     const blockElement = mapRef.current.closest('.wp-block[data-block]');                    
@@ -194,30 +205,66 @@ registerBlockType('my-block/google-map', {
                         return; // Do nothing if the block is not selected
                     }
                     console.log('Block is selected');
-
-
+        
                     const clickedLat = e.latLng.lat();
                     const clickedLng = e.latLng.lng();
                     mapMarker.setPosition({ lat: clickedLat, lng: clickedLng });
                     setAttributes({ lat: clickedLat, lng: clickedLng });
                     reverseGeocode(clickedLat, clickedLng);
                 });
-    
+        
                 googleMap.addListener('zoom_changed', () => {
                     setAttributes({ zoom: googleMap.getZoom() });
                 });
-    
+        
                 const streetViewPanorama = googleMap.getStreetView();
                 setPanorama(streetViewPanorama);
-    
+        
                 if (isStreetView) {
                     streetViewPanorama.setPosition({ lat, lng });
                     streetViewPanorama.setPov({ heading: streetViewHeading, pitch: streetViewPitch });
                     streetViewPanorama.setVisible(true);
                     setupStreetViewListeners(streetViewPanorama);
                 }
+        
+                // Initialize the Places Autocomplete service for the search input
+                const inputElement = document.querySelector('.autocomplete-search');
+                if (inputElement) {
+                    console.log("Input element found:", inputElement);
+        
+                    const autocomplete = new google.maps.places.Autocomplete(inputElement);
+                    autocomplete.bindTo('bounds', googleMap); // Bind autocomplete to the current map bounds
+        
+                    autocomplete.addListener('place_changed', () => {
+                        const place = autocomplete.getPlace();
+                        console.log('Autocomplete place changed:', place);
+        
+                        if (!place.geometry) {
+                            console.log('No geometry available for this place');
+                            return;
+                        }
+        
+                        // Update map and marker with new place
+                        const newLat = place.geometry.location.lat();
+                        const newLng = place.geometry.location.lng();
+                        googleMap.setCenter({ lat: newLat, lng: newLng });
+                        mapMarker.setPosition({ lat: newLat, lng: newLng });
+        
+                        // Update block attributes with the new place information
+                        setAttributes({
+                            lat: newLat,
+                            lng: newLng,
+                            address: place.formatted_address || '',
+                        });
+        
+                        console.log(`New Coordinates: Lat ${newLat}, Lng ${newLng}, Address: ${place.formatted_address}`);
+                    });
+                } else {
+                    console.log("Could not find the input element with class '.autocomplete-search'");
+                }
             }
         }, [mapAsBackground, isStreetView]);
+        
     
         useEffect(() => {
             if (map) {
@@ -287,22 +334,22 @@ registerBlockType('my-block/google-map', {
                     )}
                     {!mapAsBackground && (
                         <>
-                            {isSelected && (
-                                <input
-                                    ref={searchRef}
-                                    type="text"
-                                    placeholder="Search for a location"
-                                    style={{
-                                        width: '50%',
-                                        padding: '8px',
-                                        top: '10px',
-                                        position: 'absolute',
-                                        left: '50%',
-                                        transform: 'translateX(-50%)',
-                                        zIndex: '100'
-                                    }}
-                                />
-                            )}
+                            <input
+    ref={searchRef}
+    className="autocomplete-search"
+    type="text"
+    placeholder="Search for a location"
+    style={{
+        width: '50%',
+        padding: '8px',
+        top: '10px',
+        position: 'absolute',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        zIndex: '100',
+        display: isSelected ? 'block' : 'none', // Toggle visibility based on isSelected
+    }}
+/>
                             <div ref={mapRef} style={{ width: '100%', height: '600px', backgroundColor: '#e5e5e5' }}></div>
                         </>
                     )}
