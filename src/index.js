@@ -5,12 +5,6 @@ import { PanelBody, TextControl, ToggleControl, RangeControl, SelectControl } fr
 
 const ALLOWED_BLOCKS = [ 'core/paragraph', 'core/heading', 'core/image' ];
 
-const defaultSettings = typeof aceMapBlockDefaults !== 'undefined' ? aceMapBlockDefaults : {
-    disableZoom: false,
-    disableLabels: false,
-    disableUIButtons: false,
-    disableMovement: false
-};
 
 registerBlockType('my-block/google-map', {
     title: 'Google Map',
@@ -26,10 +20,10 @@ registerBlockType('my-block/google-map', {
         zoom: { type: 'number', default: 8 },
         mapStyle: { type: 'string', default: '' },
         mapIsImage: { type: 'boolean', default: false },
-        disableMovement: { type: 'boolean', default: !!defaultSettings.disableMovement },
-        disableZoom: { type: 'boolean', default: !!defaultSettings.disableZoom },
-        disableLabels: { type: 'boolean', default: !!defaultSettings.disableLabels },
-        disableUIButtons: { type: 'boolean', default: !!defaultSettings.disableUIButtons },
+        disableMovement: { type: 'boolean', default: !!aceMapBlockDefaults.disableMovement },
+        disableZoom: { type: 'boolean', default: !!aceMapBlockDefaults.disableZoom },
+        disableLabels: { type: 'boolean', default: !!aceMapBlockDefaults.disableLabels },
+        disableUIButtons: { type: 'boolean', default: !!aceMapBlockDefaults.disableUIButtons },
         mapAsBackground: { type: 'boolean', default: false },
         showMarker: { type: 'boolean', default: true }, // New attribute for marker visibility
     },
@@ -284,50 +278,126 @@ registerBlockType('my-block/google-map', {
             }
         }, [lat, lng, zoom, mapStyle, disableMovement, disableZoom, disableLabels, disableUIButtons]);
             
+
+
+
+        useEffect(() => {
+    if (!attributes.disableZoom) {
+        setAttributes({ disableZoom: !!aceMapBlockDefaults.disableZoom });
+    }
+    if (!attributes.disableLabels) {
+        setAttributes({ disableLabels: !!aceMapBlockDefaults.disableLabels });
+    }
+    if (!attributes.disableUIButtons) {
+        setAttributes({ disableUIButtons: !!aceMapBlockDefaults.disableUIButtons });
+    }
+    if (!attributes.disableMovement) {
+        setAttributes({ disableMovement: !!aceMapBlockDefaults.disableMovement });
+    }
+}, []);
         return (
             <>
                 <InspectorControls>
-                    <PanelBody title="Map Settings">
-                        <TextControl label="Latitude" value={lat} onChange={(value) => setAttributes({ lat: parseFloat(value) })} />
-                        <TextControl label="Longitude" value={lng} onChange={(value) => setAttributes({ lng: parseFloat(value) })} />
-                        <TextControl label="Address" value={address} disabled />
-                        <ToggleControl
-                                label="Show Marker"
-                                checked={attributes.showMarker}
-                                onChange={(value) => setAttributes({ showMarker: value })}
-                            />
-                        <RangeControl label="Zoom Level" value={zoom} onChange={(value) => setAttributes({ zoom: value })} min={1} max={20} />
-                        <ToggleControl label="Map as Image" checked={mapIsImage} onChange={(value) => setAttributes({ mapIsImage: value })} />
-                        <ToggleControl label="Map as Background" checked={mapAsBackground} onChange={(value) => setAttributes({ mapAsBackground: value })} />
-                        {!mapIsImage && (
-                            <>
-                                <ToggleControl label="Is Street View?" checked={isStreetView} onChange={() => {
-                                    if (panorama) {
-                                        if (isStreetView) panorama.setVisible(false);
-                                        else {
-                                            panorama.setPosition({ lat, lng });
-                                            panorama.setPov({ heading: streetViewHeading, pitch: streetViewPitch });
-                                            panorama.setVisible(true);
-                                            setupStreetViewListeners(panorama);
-                                        }
-                                    }
-                                    setAttributes({ isStreetView: !isStreetView });
-                                }} />
-                                {isStreetView && (
-                                    <>
-                                        <TextControl label="Street View Heading" value={streetViewHeading} onChange={(value) => setAttributes({ streetViewHeading: parseFloat(value) })} />
-                                        <TextControl label="Street View Pitch" value={streetViewPitch} onChange={(value) => setAttributes({ streetViewPitch: parseFloat(value) })} />
-                                    </>
-                                )}
-                                <SelectControl label="Map Style" value={mapStyle} options={[{ label: 'Default', value: '' }, ...Object.keys(aceMapBlock.styles).map(style => ({ label: style, value: style }))]} onChange={(value) => setAttributes({ mapStyle: value })} />
-                                <ToggleControl label="Disable Map Movement" checked={disableMovement} onChange={(value) => setAttributes({ disableMovement: value })} />
-                                <ToggleControl label="Disable Zoom" checked={disableZoom} onChange={(value) => setAttributes({ disableZoom: value })} />
-                                <ToggleControl label="Disable Labels" checked={disableLabels} onChange={(value) => setAttributes({ disableLabels: value })} />
-                                <ToggleControl label="Disable UI Buttons" checked={disableUIButtons} onChange={(value) => setAttributes({ disableUIButtons: value })} />
-                            </>
-                        )}
-                    </PanelBody>
-                </InspectorControls>
+    <PanelBody title="Map Settings">
+        <TextControl 
+            label="Latitude" 
+            value={lat !== undefined ? lat : 51.5074} 
+            onChange={(value) => setAttributes({ lat: parseFloat(value) })} 
+        />
+        <TextControl 
+            label="Longitude" 
+            value={lng !== undefined ? lng : -0.1278} 
+            onChange={(value) => setAttributes({ lng: parseFloat(value) })} 
+        />
+        <TextControl 
+            label="Address" 
+            value={address} 
+            disabled 
+        />
+        <ToggleControl
+            label="Show Marker"
+            checked={attributes.showMarker !== undefined ? attributes.showMarker : true}
+            onChange={(value) => setAttributes({ showMarker: value })}
+        />
+        <RangeControl 
+            label="Zoom Level" 
+            value={zoom !== undefined ? zoom : 8} 
+            onChange={(value) => setAttributes({ zoom: value })} 
+            min={1} max={20} 
+        />
+        <ToggleControl 
+            label="Map as Image" 
+            checked={mapIsImage !== undefined ? mapIsImage : false} 
+            onChange={(value) => setAttributes({ mapIsImage: value })} 
+        />
+        <ToggleControl 
+            label="Map as Background" 
+            checked={mapAsBackground !== undefined ? mapAsBackground : false} 
+            onChange={(value) => setAttributes({ mapAsBackground: value })} 
+        />
+        {!mapIsImage && (
+            <>
+                <ToggleControl 
+                    label="Is Street View?" 
+                    checked={isStreetView !== undefined ? isStreetView : false} 
+                    onChange={() => {
+                        if (panorama) {
+                            if (isStreetView) panorama.setVisible(false);
+                            else {
+                                panorama.setPosition({ lat, lng });
+                                panorama.setPov({ heading: streetViewHeading, pitch: streetViewPitch });
+                                panorama.setVisible(true);
+                                setupStreetViewListeners(panorama);
+                            }
+                        }
+                        setAttributes({ isStreetView: !isStreetView });
+                    }} 
+                />
+                {isStreetView && (
+                    <>
+                        <TextControl 
+                            label="Street View Heading" 
+                            value={streetViewHeading !== undefined ? streetViewHeading : 0} 
+                            onChange={(value) => setAttributes({ streetViewHeading: parseFloat(value) })} 
+                        />
+                        <TextControl 
+                            label="Street View Pitch" 
+                            value={streetViewPitch !== undefined ? streetViewPitch : 0} 
+                            onChange={(value) => setAttributes({ streetViewPitch: parseFloat(value) })} 
+                        />
+                    </>
+                )}
+                <SelectControl 
+                    label="Map Style" 
+                    value={mapStyle !== undefined ? mapStyle : ''} 
+                    options={[{ label: 'Default', value: '' }, ...Object.keys(aceMapBlock.styles).map(style => ({ label: style, value: style }))]} 
+                    onChange={(value) => setAttributes({ mapStyle: value })} 
+                />
+                <ToggleControl 
+                    label="Disable Map Movement" 
+                    checked={disableMovement !== undefined ? disableMovement : !!aceMapBlockDefaults.disableMovement} 
+                    onChange={(value) => setAttributes({ disableMovement: value })} 
+                />
+                <ToggleControl 
+                    label="Disable Zoom" 
+                    checked={disableZoom !== undefined ? disableZoom : !!aceMapBlockDefaults.disableZoom} 
+                    onChange={(value) => setAttributes({ disableZoom: value })} 
+                />
+                <ToggleControl 
+                    label="Disable Labels" 
+                    checked={disableLabels !== undefined ? disableLabels : !!aceMapBlockDefaults.disableLabels} 
+                    onChange={(value) => setAttributes({ disableLabels: value })} 
+                />
+                <ToggleControl 
+                    label="Disable UI Buttons" 
+                    checked={disableUIButtons !== undefined ? disableUIButtons : !!aceMapBlockDefaults.disableUIButtons} 
+                    onChange={(value) => setAttributes({ disableUIButtons: value })} 
+                />
+            </>
+        )}
+    </PanelBody>
+</InspectorControls>
+
     
                 <div {...blockProps} style={{ position: 'relative', width: '100%', height: '600px' }}>
                     {!mapIsImage && mapAsBackground && (

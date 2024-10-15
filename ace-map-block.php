@@ -198,13 +198,17 @@ function ace_map_block_enqueue_google_maps_scripts($is_editor = false) {
         true
     );
 
-    // Pass defaults to the block script
-    wp_localize_script($script_handle, 'aceMapBlockDefaults', array(
-        'disableZoom' => $disable_zoom,
-        'disableLabels' => $disable_labels,
-        'disableUIButtons' => $disable_ui_buttons,
-        'disableMovement' => $disable_movement,
-    ));
+    wp_localize_script(
+    $script_handle,
+    'aceMapBlockDefaults',
+    array(
+        'disableZoom' => get_option('ace_map_block_disable_zoom', false),
+        'disableLabels' => get_option('ace_map_block_disable_labels', false),
+        'disableUIButtons' => get_option('ace_map_block_disable_ui_buttons', false),
+        'disableMovement' => get_option('ace_map_block_disable_movement', false),
+    )
+);
+
 
     // Localize styles if needed
     $styles = array();
