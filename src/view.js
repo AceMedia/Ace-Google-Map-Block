@@ -10,17 +10,41 @@ document.addEventListener('DOMContentLoaded', function() {
         const zoom = parseInt(mapElement.dataset.zoom, 10) || 10;
         const mapStyle = mapElement.dataset.mapStyle;
 
-        console.log('Map Style:', mapStyle);
-        console.log('Available Styles:', aceMapBlock.styles);
+        // New data attributes for disabling controls
+        const disableMovement = mapElement.dataset.disableMovement === 'true';
+        const disableZoom = mapElement.dataset.disableZoom === 'true';
+        const disableLabels = mapElement.dataset.disableLabels === 'true';
 
+        // Retrieve the existing map style
+        let currentStyle = aceMapBlock.styles[mapStyle] || [];
+
+        // If disableLabels is true, extend the current style to remove labels
+        if (disableLabels) {
+            currentStyle = [
+                ...currentStyle,
+                {
+                    "featureType": "all",
+                    "elementType": "labels",
+                    "stylers": [{ "visibility": "off" }]
+                }
+            ];
+        }
+
+        console.log('Map Style:', mapStyle);
+        console.log('Modified Style with Disabled Labels:', currentStyle);
+
+        // Initialize the map with options based on the block's attributes
         const mapOptions = {
             zoom: zoom,
             center: { lat: initialLat, lng: initialLng },
-            styles: aceMapBlock.styles[mapStyle] || null,
+            styles: currentStyle,            // Apply the modified style
+            draggable: !disableMovement,     // Disable map movement if true
+            zoomControl: !disableZoom,       // Disable zoom controls if true
         };
 
         const map = new google.maps.Map(mapElement, mapOptions);
 
+        // Add a marker at the initial lat/lng
         const marker = new google.maps.Marker({
             position: { lat: initialLat, lng: initialLng },
             map: map,
@@ -50,7 +74,5 @@ document.addEventListener('DOMContentLoaded', function() {
                 map.setCenter(marker.getPosition());
             }
         });
-
-        // Track the last position to prevent redundant updates
     });
 });
