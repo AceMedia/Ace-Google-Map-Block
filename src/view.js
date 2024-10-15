@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const disableMovement = mapElement.dataset.disableMovement === 'true';
         const disableZoom = mapElement.dataset.disableZoom === 'true';
         const disableLabels = mapElement.dataset.disableLabels === 'true';
+        const disableUIButtons = mapElement.dataset.disableUiButtons === 'true'; // Disable UI buttons
 
         // Retrieve the existing map style
         let currentStyle = aceMapBlock.styles[mapStyle] || [];
@@ -40,6 +41,7 @@ document.addEventListener('DOMContentLoaded', function() {
             styles: currentStyle,            // Apply the modified style
             draggable: !disableMovement,     // Disable map movement if true
             zoomControl: !disableZoom,       // Disable zoom controls if true
+            disableDefaultUI: disableUIButtons, // Disable UI buttons if true
         };
 
         const map = new google.maps.Map(mapElement, mapOptions);
