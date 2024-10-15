@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const disableZoom = mapElement.dataset.disableZoom === 'true';
         const disableLabels = mapElement.dataset.disableLabels === 'true';
         const disableUIButtons = mapElement.dataset.disableUiButtons === 'true'; // Disable UI buttons
+        const showMarker = mapElement.dataset.showMarker === 'true'; // New data attribute for marker
 
         // Retrieve the existing map style
         let currentStyle = aceMapBlock.styles[mapStyle] || [];
@@ -31,9 +32,6 @@ document.addEventListener('DOMContentLoaded', function() {
             ];
         }
 
-        console.log('Map Style:', mapStyle);
-        console.log('Modified Style with Disabled Labels:', currentStyle);
-
         // Initialize the map with options based on the block's attributes
         const mapOptions = {
             zoom: zoom,
@@ -46,11 +44,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const map = new google.maps.Map(mapElement, mapOptions);
 
-        // Add a marker at the initial lat/lng
-        const marker = new google.maps.Marker({
-            position: { lat: initialLat, lng: initialLng },
-            map: map,
-        });
+        // Conditionally add a marker only if showMarker is true
+        let marker;
+        if (showMarker) {
+            marker = new google.maps.Marker({
+                position: { lat: initialLat, lng: initialLng },
+                map: map,
+            });
+        }
 
         // Set up Street View
         const panorama = new google.maps.StreetViewPanorama(mapElement, {
@@ -72,7 +73,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             // If Street View is hidden, reset the map center
-            if (!isVisible) {
+            if (!isVisible && marker) {
                 map.setCenter(marker.getPosition());
             }
         });

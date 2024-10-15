@@ -30,7 +30,8 @@ registerBlockType('my-block/google-map', {
         disableZoom: { type: 'boolean', default: !!defaultSettings.disableZoom },
         disableLabels: { type: 'boolean', default: !!defaultSettings.disableLabels },
         disableUIButtons: { type: 'boolean', default: !!defaultSettings.disableUIButtons },
-        mapAsBackground: { type: 'boolean', default: false }, // New attribute for background mode
+        mapAsBackground: { type: 'boolean', default: false },
+        showMarker: { type: 'boolean', default: true }, // New attribute for marker visibility
     },
     edit: ({ attributes, setAttributes, isSelected }) => {
         const {
@@ -290,6 +291,11 @@ registerBlockType('my-block/google-map', {
                         <TextControl label="Latitude" value={lat} onChange={(value) => setAttributes({ lat: parseFloat(value) })} />
                         <TextControl label="Longitude" value={lng} onChange={(value) => setAttributes({ lng: parseFloat(value) })} />
                         <TextControl label="Address" value={address} disabled />
+                        <ToggleControl
+                                label="Show Marker"
+                                checked={attributes.showMarker}
+                                onChange={(value) => setAttributes({ showMarker: value })}
+                            />
                         <RangeControl label="Zoom Level" value={zoom} onChange={(value) => setAttributes({ zoom: value })} min={1} max={20} />
                         <ToggleControl label="Map as Image" checked={mapIsImage} onChange={(value) => setAttributes({ mapIsImage: value })} />
                         <ToggleControl label="Map as Background" checked={mapAsBackground} onChange={(value) => setAttributes({ mapAsBackground: value })} />
@@ -371,7 +377,8 @@ registerBlockType('my-block/google-map', {
             disableZoom,
             disableLabels,
             disableUIButtons,
-            mapAsBackground
+            mapAsBackground,
+            showMarker // Include this in save
         } = attributes;
     
         // Generate the appropriate classes and data attributes based on the map settings
@@ -397,11 +404,12 @@ registerBlockType('my-block/google-map', {
             'data-disable-zoom': disableZoom ? 'true' : 'false',
             'data-disable-labels': disableLabels ? 'true' : 'false',
             'data-disable-ui-buttons': disableUIButtons ? 'true' : 'false',
+            'data-show-marker': showMarker ? 'true' : 'false', // Ensure showMarker is passed
         };
     
         return mapIsImage ? (
             <img
-                src={`https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=${zoom}&size=600x400&markers=color:red%7C${lat},${lng}&key=${aceMapBlock.apiKey}`}
+                src={`https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=${zoom}&size=600x400${showMarker ? `&markers=color:red%7C${lat},${lng}` : ''}&key=${aceMapBlock.apiKey}`}
                 alt="Google Map"
             />
         ) : (
@@ -419,5 +427,6 @@ registerBlockType('my-block/google-map', {
             </div>
         );
     }
+    
     
 });
