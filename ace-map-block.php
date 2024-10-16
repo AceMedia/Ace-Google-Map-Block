@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 // include_once plugin_dir_path( __FILE__ ) . 'update.php';
 
 function create_blockacemedia_map_block_block_init() {
-    register_block_type( __DIR__ . '/build' );
+    register_block_type( __DIR__ . '/assets' );
 }
 add_action( 'init', 'create_blockacemedia_map_block_block_init' );
 
@@ -187,7 +187,7 @@ function acemedia_map_block_enqueue_google_maps_scripts($is_editor = false) {
     }
 
     $script_handle = $is_editor ? 'acemedia-map-block-editor-js' : 'acemedia-map-block-frontend';
-    $script_file = $is_editor ? 'build/index.js' : 'build/view.js';
+    $script_file = $is_editor ? 'assets/index.js' : 'assets/view.js';
     $dependencies = $is_editor ? array('wp-blocks', 'wp-element', 'wp-editor') : array('google-maps-api');
     
     wp_enqueue_script(
@@ -343,7 +343,7 @@ function acemedia_map_process_maps_data( &$maps_data ) {
         }
 
         if ( ! empty( $map['mapIsImage'] ) ) {
-            // Build the static map image URL
+            // assets the static map image URL
             $api_key = get_option( 'acemedia_map_block_api_key' );
 
             $map['imageUrl'] = sprintf(
