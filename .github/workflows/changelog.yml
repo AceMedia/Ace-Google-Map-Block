@@ -10,10 +10,9 @@ jobs:
         runs-on: ubuntu-latest
 
         steps:
-            - name: Checkout main branch
+            - name: Checkout current commit
               uses: actions/checkout@v2
               with:
-                  ref: main # Checkout the main branch
                   fetch-depth: 0 # Fetch full history to capture all commits
 
             - name: Set Git user information
@@ -29,7 +28,7 @@ jobs:
 
             - name: Generate changelog based on commit history
               run: |
-                  PREV_TAG=$(git describe --tags --abbrev=0 HEAD^)
+                  PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ || echo "initial")
                   git log $PREV_TAG..HEAD --no-merges --pretty=format:"* _%h_ - **%cd** - %s" --date=format:'%Y-%m-%d %H:%M:%S' > changelog.txt
                   cat changelog.txt
 
@@ -45,5 +44,5 @@ jobs:
               env:
                   GH_PAT: ${{ secrets.GH_PAT }}
               run: |
-                  git pull origin main  # Pull latest changes before pushing
+                  git pull --rebase origin main  # Pull latest changes with rebase before pushing
                   git push https://$GH_PAT@github.com/${{ github.repository }} main  # Push using PAT
