@@ -4,12 +4,12 @@
 	"description": "Ace Google Maps.",
 	"author": "Shane Rounce",
 	"license": "GPL-2.0-or-later",
-	"main": "build/index.js",
+	"main": "assets/index.js",
 	"scripts": {
-		"build": "wp-scripts build",
-		"format": "wp-scripts format",
+		"build": "wp-scripts build && ( [ -d assets/ ] && rm -r assets/ || true ) && mkdir assets/ && mv build/* assets/ && rm -rf build",		"format": "wp-scripts format",
 		"lint:css": "wp-scripts lint-style",
 		"lint:js": "wp-scripts lint-js",
+		"watch-css": "sass --watch src/scss:assets/css",
 		"packages-update": "wp-scripts packages-update",
 		"plugin-zip": "wp-scripts plugin-zip",
 		"start": "wp-scripts start"
