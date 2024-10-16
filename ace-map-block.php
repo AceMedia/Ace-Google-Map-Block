@@ -244,56 +244,66 @@ add_action('enqueue_block_editor_assets', function() {
 
 add_action('wp_enqueue_scripts', 'ace_map_block_enqueue_google_maps_scripts');
 
-function ace_map_block_save_post($post_id) {
-    // Check if the post is valid and not autosaving
-    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
-        return;
-    }
 
-    // Check if this is a valid request
-    if (!current_user_can('edit_post', $post_id)) {
-        return;
-    }
-
-    // Get all block data from the post content
-    $post_content = get_post_field('post_content', $post_id);
-    $blocks = parse_blocks($post_content);
-
-    $maps_data = array();
-    foreach ($blocks as $block) {
-        if ('my-block/google-map' === $block['blockName']) { // Correct block name
+function ace_map_block_traverse_blocks( $blocks, &$maps_data ) {
+    foreach ( $blocks as $block ) {
+        if ( 'my-block/google-map' === $block['blockName'] ) { // Correct block name
             // Extract block attributes, prioritize block-level settings over global defaults
             $attributes = $block['attrs'];
-            
+
             // Organized attributes in a more logical order
             $map_entry = array(
-                'latitude' => isset($attributes['lat']) ? $attributes['lat'] : '',
-                'longitude' => isset($attributes['lng']) ? $attributes['lng'] : '',
-                'address' => isset($attributes['address']) ? $attributes['address'] : '',
-                'zoom' => isset($attributes['zoom']) ? $attributes['zoom'] : 8,
-                'mapStyle' => isset($attributes['mapStyle']) ? $attributes['mapStyle'] : 'default',
-                'isStreetView' => isset($attributes['isStreetView']) ? (bool) $attributes['isStreetView'] : false,
-                'streetViewHeading' => isset($attributes['streetViewHeading']) ? $attributes['streetViewHeading'] : 0,
-                'streetViewPitch' => isset($attributes['streetViewPitch']) ? $attributes['streetViewPitch'] : 0,
-                'disableMovement' => isset($attributes['disableMovement']) ? (bool) $attributes['disableMovement'] : (bool)get_option('ace_map_block_disable_movement', true),
-                'disableZoom' => isset($attributes['disableZoom']) ? (bool) $attributes['disableZoom'] : (bool)get_option('ace_map_block_disable_zoom', false),
-                'disableLabels' => isset($attributes['disableLabels']) ? (bool) $attributes['disableLabels'] : (bool)get_option('ace_map_block_disable_labels', false),
-                'disableUIButtons' => isset($attributes['disableUIButtons']) ? (bool) $attributes['disableUIButtons'] : (bool)get_option('ace_map_block_disable_ui_buttons', true),
-                'mapIsImage' => isset($attributes['mapIsImage']) ? (bool) $attributes['mapIsImage'] : false,
-                'mapAsBackground' => isset($attributes['mapAsBackground']) ? (bool) $attributes['mapAsBackground'] : false,
-                'showMarker' => isset($attributes['showMarker']) ? (bool) $attributes['showMarker'] : true
+                'latitude' => isset( $attributes['lat'] ) ? $attributes['lat'] : '',
+                'longitude' => isset( $attributes['lng'] ) ? $attributes['lng'] : '',
+                'address' => isset( $attributes['address'] ) ? $attributes['address'] : '',
+                'zoom' => isset( $attributes['zoom'] ) ? $attributes['zoom'] : 8,
+                'mapStyle' => isset( $attributes['mapStyle'] ) ? $attributes['mapStyle'] : 'default',
+                'isStreetView' => isset( $attributes['isStreetView'] ) ? (bool) $attributes['isStreetView'] : false,
+                'streetViewHeading' => isset( $attributes['streetViewHeading'] ) ? $attributes['streetViewHeading'] : 0,
+                'streetViewPitch' => isset( $attributes['streetViewPitch'] ) ? $attributes['streetViewPitch'] : 0,
+                'disableMovement' => isset( $attributes['disableMovement'] ) ? (bool) $attributes['disableMovement'] : (bool)get_option( 'ace_map_block_disable_movement', true ),
+                'disableZoom' => isset( $attributes['disableZoom'] ) ? (bool) $attributes['disableZoom'] : (bool)get_option( 'ace_map_block_disable_zoom', false ),
+                'disableLabels' => isset( $attributes['disableLabels'] ) ? (bool) $attributes['disableLabels'] : (bool)get_option( 'ace_map_block_disable_labels', false ),
+                'disableUIButtons' => isset( $attributes['disableUIButtons'] ) ? (bool) $attributes['disableUIButtons'] : (bool)get_option( 'ace_map_block_disable_ui_buttons', true ),
+                'mapIsImage' => isset( $attributes['mapIsImage'] ) ? (bool) $attributes['mapIsImage'] : false,
+                'mapAsBackground' => isset( $attributes['mapAsBackground'] ) ? (bool) $attributes['mapAsBackground'] : false,
+                'showMarker' => isset( $attributes['showMarker'] ) ? (bool) $attributes['showMarker'] : true,
             );
 
             // Add map entry to maps_data
             $maps_data[] = $map_entry;
         }
+
+        // If there are inner blocks, recursively traverse them
+        if ( ! empty( $block['innerBlocks'] ) ) {
+            ace_map_block_traverse_blocks( $block['innerBlocks'], $maps_data );
+        }
+    }
+}
+
+function ace_map_block_save_post( $post_id ) {
+    // Check if the post is valid and not autosaving
+    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+        return;
     }
 
+    // Check if this is a valid request
+    if ( ! current_user_can( 'edit_post', $post_id ) ) {
+        return;
+    }
+
+    // Get all block data from the post content
+    $post_content = get_post_field( 'post_content', $post_id );
+    $blocks = parse_blocks( $post_content );
+
+    $maps_data = array();
+    ace_map_block_traverse_blocks( $blocks, $maps_data ); // Traverse the blocks
+
     // Save the map data as post meta
-    if (!empty($maps_data)) {
-        update_post_meta($post_id, '_ace_google_map_data', $maps_data);
+    if ( ! empty( $maps_data ) ) {
+        update_post_meta( $post_id, '_ace_google_map_data', $maps_data );
     } else {
-        delete_post_meta($post_id, '_ace_google_map_data'); // Clean up if no maps exist
+        delete_post_meta( $post_id, '_ace_google_map_data' ); // Clean up if no maps exist
     }
 }
 
@@ -302,6 +312,7 @@ add_action('save_post', 'ace_map_block_save_post');
 
 
 
+add_action('rest_api_init', 'ace_map_block_register_rest_route');
 
 function ace_map_block_register_rest_route() {
     register_rest_route('ace-map/v1', '/maps/(?P<id>\d+)', array(
@@ -309,19 +320,18 @@ function ace_map_block_register_rest_route() {
         'callback' => 'ace_map_block_get_maps_data',
         'permission_callback' => '__return_true', // Make this publicly accessible
     ));
+
+    // New route for listing all posts with map data
+    register_rest_route('ace-map/v1', '/maps', array(
+        'methods' => 'GET',
+        'callback' => 'ace_map_block_get_maps_data',
+        'permission_callback' => '__return_true', // Make this publicly accessible
+    ));
 }
 
-function ace_map_block_get_maps_data($data) {
-    $post_id = (int) $data['id'];
-    $maps_data = get_post_meta($post_id, '_ace_google_map_data', true);
-
-    if (empty($maps_data)) {
-        return new WP_Error('no_maps', 'No map data found', array('status' => 404));
-    }
-
-    // Loop through each map data entry and remove unnecessary fields if street view is enabled
-    foreach ($maps_data as &$map) {
-        if (!empty($map['isStreetView'])) {
+function ace_map_process_maps_data( &$maps_data ) {
+    foreach ( $maps_data as &$map ) {
+        if ( ! empty( $map['isStreetView'] ) ) {
             // Unset unnecessary fields for Street View API response
             unset(
                 $map['disableZoom'],
@@ -331,34 +341,91 @@ function ace_map_block_get_maps_data($data) {
                 $map['showMarker']
             );
         }
-        if (!empty($map['mapIsImage'])) {
 
-            $api_key = get_option('ace_map_block_api_key');
+        if ( ! empty( $map['mapIsImage'] ) ) {
+            // Build the static map image URL
+            $api_key = get_option( 'ace_map_block_api_key' );
 
-    // Build the static map image URL
-    $map['imageUrl'] = sprintf(
-        'https://maps.googleapis.com/maps/api/staticmap?center=%s,%s&zoom=%d&size=600x400&key=%s%s',
-        $map['latitude'],
-        $map['longitude'],
-        $map['zoom'] ?? 8,  // Use the default zoom if not set
-        $api_key,  // Your Google Maps API key
-        !empty($map['showMarker']) ? '&markers=color:red%7C' . $map['latitude'] . ',' . $map['longitude'] : ''
-    );
+            $map['imageUrl'] = sprintf(
+                'https://maps.googleapis.com/maps/api/staticmap?center=%s,%s&zoom=%d&size=600x400&key=%s%s',
+                $map['latitude'],
+                $map['longitude'],
+                $map['zoom'] ?? 8,  // Use the default zoom if not set
+                $api_key,  // Your Google Maps API key
+                ! empty( $map['showMarker'] ) ? '&markers=color:red%7C' . $map['latitude'] . ',' . $map['longitude'] : ''
+            );
 
-            // Unset unnecessary fields for Street View API response
+            // Unset unnecessary fields for Image API response
             unset(
                 $map['mapStyle'],
                 $map['disableLabels'],
                 $map['disableUIButtons'],
                 $map['disableZoom'],
                 $map['disableMovement'],
-                $map['isStreetView'],
+                $map['isStreetView']
             );
         }
     }
-
-    return rest_ensure_response($maps_data);
 }
 
+function ace_map_block_get_maps_data( $data ) {
+    // Check if a post ID is provided in the request
+    $post_id = isset( $data['id'] ) ? (int) $data['id'] : null;
 
-add_action('rest_api_init', 'ace_map_block_register_rest_route');
+    // If no post ID is provided, list all posts with map data
+    if ( is_null( $post_id ) ) {
+        // Query all posts that have map data saved in meta
+        $args = array(
+            'post_type' => 'any', // Or specify your custom post type
+            'meta_query' => array(
+                array(
+                    'key'     => '_ace_google_map_data', // The meta key for map data
+                    'compare' => 'EXISTS', // Ensures only posts with map data are returned
+                ),
+            ),
+        );
+
+        $posts    = get_posts( $args );
+        $response = array();
+
+        // Loop through each post
+        foreach ( $posts as $post ) {
+            $maps_data = get_post_meta( $post->ID, '_ace_google_map_data', true );
+
+            if ( ! empty( $maps_data ) ) {
+                // Process map data to remove unnecessary fields
+                ace_map_process_maps_data( $maps_data );
+
+                // Prepare the response data for each post
+                $response[] = array(
+                    'id'    => $post->ID,
+                    'title' => get_the_title( $post->ID ),
+                    'link'  => get_permalink( $post->ID ),
+                    'maps'  => $maps_data, // Include the processed map data
+                );
+            }
+        }
+
+        // If no posts with maps found, return a WP_Error
+        if ( empty( $response ) ) {
+            return new WP_Error( 'no_maps', 'No posts with map data found', array( 'status' => 404 ) );
+        }
+
+        return rest_ensure_response( $response );
+    }
+
+    // Handle single post data if a post ID is provided
+    $maps_data = get_post_meta( $post_id, '_ace_google_map_data', true );
+
+    print_r($maps_data);    
+
+    if ( empty( $maps_data ) ) {
+        return new WP_Error( 'no_maps', 'No map data found', array( 'status' => 404 ) );
+    }
+
+    // Process the map data to remove unnecessary fields
+    ace_map_process_maps_data( $maps_data );
+
+    return rest_ensure_response( $maps_data );
+}
+
