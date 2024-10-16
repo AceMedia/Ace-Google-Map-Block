@@ -85,6 +85,25 @@ registerBlockType('my-block/google-map', {
             streetViewPanorama.addListener('position_changed', handlePositionChange);
             streetViewPanorama.addListener('pov_changed', handlePovChange);
         };
+
+
+
+        useEffect(() => {
+            // Set defaults from plugin settings if not explicitly set
+            if (disableZoom === undefined) {
+                setAttributes({ disableZoom: !!aceMapBlockDefaults.disableZoom });
+            }
+            if (disableLabels === undefined) {
+                setAttributes({ disableLabels: !!aceMapBlockDefaults.disableLabels });
+            }
+            if (disableUIButtons === undefined) {
+                setAttributes({ disableUIButtons: !!aceMapBlockDefaults.disableUIButtons });
+            }
+            if (disableMovement === undefined) {
+                setAttributes({ disableMovement: !!aceMapBlockDefaults.disableMovement });
+            }
+        }, []);
+        
     
         useEffect(() => {
             // Initialize the map if it hasn't been initialized yet
@@ -159,7 +178,6 @@ registerBlockType('my-block/google-map', {
                 }
             }
         }, [map, lat, lng, zoom, mapStyle, disableZoom, disableLabels, disableUIButtons]);
-        
         
         
         
@@ -280,21 +298,6 @@ registerBlockType('my-block/google-map', {
             
 
 
-
-        useEffect(() => {
-    if (!attributes.disableZoom) {
-        setAttributes({ disableZoom: !!aceMapBlockDefaults.disableZoom });
-    }
-    if (!attributes.disableLabels) {
-        setAttributes({ disableLabels: !!aceMapBlockDefaults.disableLabels });
-    }
-    if (!attributes.disableUIButtons) {
-        setAttributes({ disableUIButtons: !!aceMapBlockDefaults.disableUIButtons });
-    }
-    if (!attributes.disableMovement) {
-        setAttributes({ disableMovement: !!aceMapBlockDefaults.disableMovement });
-    }
-}, []);
         return (
             <>
                 <InspectorControls>
@@ -435,21 +438,28 @@ registerBlockType('my-block/google-map', {
     },    
     save: ({ attributes }) => {
         const {
-            lat,
-            lng,
-            streetViewHeading,
-            streetViewPitch,
-            isStreetView,
-            zoom,
-            mapStyle,
-            mapIsImage,
-            disableMovement,
-            disableZoom,
-            disableLabels,
-            disableUIButtons,
-            mapAsBackground,
-            showMarker // Include this in save
+            lat = 51.5074, // Fallback to default values if not set
+            lng = -0.1278,
+            streetViewHeading = 0,
+            streetViewPitch = 0,
+            isStreetView = false,
+            zoom = 8,
+            mapStyle = '',
+            mapIsImage = false,
+            disableMovement = !!aceMapBlockDefaults.disableMovement, // Use defaults if not explicitly set
+            disableZoom = !!aceMapBlockDefaults.disableZoom,
+            disableLabels = !!aceMapBlockDefaults.disableLabels,
+            disableUIButtons = !!aceMapBlockDefaults.disableUIButtons,
+            mapAsBackground = false,
+            showMarker = true // Default value for marker visibility
         } = attributes;
+
+        // If an attribute is undefined, fallback to the default values for rendering
+        const actualDisableMovement = disableMovement !== undefined ? disableMovement : !!aceMapBlockDefaults.disableMovement;
+        const actualDisableZoom = disableZoom !== undefined ? disableZoom : !!aceMapBlockDefaults.disableZoom;
+        const actualDisableLabels = disableLabels !== undefined ? disableLabels : !!aceMapBlockDefaults.disableLabels;
+        const actualDisableUIButtons = disableUIButtons !== undefined ? disableUIButtons : !!aceMapBlockDefaults.disableUIButtons;
+    
     
         // Generate the appropriate classes and data attributes based on the map settings
         const mapClasses = [
@@ -470,11 +480,11 @@ registerBlockType('my-block/google-map', {
             'data-is-street-view': isStreetView ? 'true' : 'false',
             'data-zoom': zoom || 8,
             'data-map-style': mapStyle || 'default',
-            'data-disable-movement': disableMovement ? 'true' : 'false',
-            'data-disable-zoom': disableZoom ? 'true' : 'false',
-            'data-disable-labels': disableLabels ? 'true' : 'false',
-            'data-disable-ui-buttons': disableUIButtons ? 'true' : 'false',
-            'data-show-marker': showMarker ? 'true' : 'false', // Ensure showMarker is passed
+            'data-disable-movement': actualDisableMovement ? 'true' : 'false',
+            'data-disable-zoom': actualDisableZoom ? 'true' : 'false',
+            'data-disable-labels': actualDisableLabels ? 'true' : 'false',
+            'data-disable-ui-buttons': actualDisableUIButtons ? 'true' : 'false',
+            'data-show-marker': showMarker ? 'true' : 'false',
         };
     
         return mapIsImage ? (
