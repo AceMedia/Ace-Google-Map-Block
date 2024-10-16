@@ -13,6 +13,7 @@ build/Release
 
 # Ignore build folder
 build/
+assets/
 
 # Dependency directories
 node_modules/
