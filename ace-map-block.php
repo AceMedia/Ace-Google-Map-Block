@@ -150,7 +150,7 @@ add_action('admin_menu', 'acemedia_map_block_add_admin_menu');
 function acemedia_map_block_settings_page() {
     ?>
     <div class="wrap">
-        <h1><?php _e('Google Maps Block Settings', 'acemedia-map-block'); ?></h1>
+        <h1><?php echo esc_html__('Google Maps Block Settings', 'acemedia-map-block'); ?></h1>
         <form method="post" action="options.php">
             <?php
             settings_fields('acemedia_map_block_settings');
@@ -172,7 +172,7 @@ function acemedia_map_block_enqueue_google_maps_scripts($is_editor = false) {
     $disable_movement = get_option('acemedia_map_block_disable_movement');
 
     if ($api_key) {
-        $url = 'https://maps.googleapis.com/maps/api/js?key=' . esc_attr($api_key) . '&libraries=places'; // Ensure this is loaded only once
+        $url = esc_url('https://maps.googleapis.com/maps/api/js?key=' . esc_attr($api_key) . '&libraries=places'); // Ensure this is loaded only once
 
         wp_enqueue_script(
             'google-maps-api',
@@ -224,7 +224,7 @@ function acemedia_map_block_enqueue_google_maps_scripts($is_editor = false) {
                 if (pathinfo($file, PATHINFO_EXTENSION) === 'json') {
                     $style_name = pathinfo($file, PATHINFO_FILENAME);
                     $style_content = file_get_contents($styles_dir . $file);
-                    $styles[$style_name] = json_decode($style_content, true);
+                    $styles[$style_name] = json_decode(sanitize_text_field($style_content), true);
                 }
             }
         }
@@ -390,7 +390,7 @@ function acemedia_map_block_get_maps_data( $data ) {
 
         // Loop through each post
         foreach ( $posts as $post ) {
-            $maps_data = get_post_meta( $post->ID, 'acemedia_google_map_data', true );
+            $maps_data = array_map('sanitize_text_field', get_post_meta( $post->ID, 'acemedia_google_map_data', true ));
 
             if ( ! empty( $maps_data ) ) {
                 // Process map data to remove unnecessary fields
