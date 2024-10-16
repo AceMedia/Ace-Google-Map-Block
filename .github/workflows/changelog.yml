@@ -1,49 +1,49 @@
 name: Generate Changelog
 
 on:
-  push:
-    tags:
-      - 'v*'  # Runs when a version tag is pushed (e.g., v1.0.0)
+    push:
+        tags:
+            - 'v*' # Runs when a version tag is pushed (e.g., v1.0.0)
 
 jobs:
-  changelog:
-    runs-on: ubuntu-latest
+    changelog:
+        runs-on: ubuntu-latest
 
-    steps:
-    - name: Checkout main branch
-      uses: actions/checkout@v2
-      with:
-        ref: main  # Checkout the main branch
-        fetch-depth: 0  # Fetch full history to capture all commits
+        steps:
+            - name: Checkout main branch
+              uses: actions/checkout@v2
+              with:
+                  ref: main # Checkout the main branch
+                  fetch-depth: 0 # Fetch full history to capture all commits
 
-    - name: Set Git user information
-      run: |
-        git config --global user.email "github-actions-bot@users.noreply.github.com"
-        git config --global user.name "GitHub Actions Bot"
+            - name: Set Git user information
+              run: |
+                  git config --global user.email "github-actions-bot@users.noreply.github.com"
+                  git config --global user.name "GitHub Actions Bot"
 
-    - name: Ensure CHANGELOG.md exists
-      run: |
-        if [ ! -f CHANGELOG.md ]; then
-          touch CHANGELOG.md
-        fi
+            - name: Ensure CHANGELOG.md exists
+              run: |
+                  if [ ! -f CHANGELOG.md ]; then
+                    touch CHANGELOG.md
+                  fi
 
-    - name: Generate changelog based on commit history
-      run: |
-        PREV_TAG=$(git describe --tags --abbrev=0 HEAD^)
-        git log $PREV_TAG..HEAD --no-merges --pretty=format:"* _%h_ - **%cd** - %s" --date=format:'%Y-%m-%d %H:%M:%S' > changelog.txt
-        cat changelog.txt
+            - name: Generate changelog based on commit history
+              run: |
+                  PREV_TAG=$(git describe --tags --abbrev=0 HEAD^)
+                  git log $PREV_TAG..HEAD --no-merges --pretty=format:"* _%h_ - **%cd** - %s" --date=format:'%Y-%m-%d %H:%M:%S' > changelog.txt
+                  cat changelog.txt
 
-    - name: Append changelog to CHANGELOG.md
-      run: |
-        echo "## Version $GITHUB_REF - $(date +'%Y-%m-%d')" >> CHANGELOG.md
-        cat changelog.txt >> CHANGELOG.md
-        echo "" >> CHANGELOG.md
-        git add CHANGELOG.md
-        git commit -m "Update CHANGELOG.md for $GITHUB_REF"
+            - name: Append changelog to CHANGELOG.md
+              run: |
+                  echo "## Version $GITHUB_REF - $(date +'%Y-%m-%d')" >> CHANGELOG.md
+                  cat changelog.txt >> CHANGELOG.md
+                  echo "" >> CHANGELOG.md
+                  git add CHANGELOG.md
+                  git commit -m "Update CHANGELOG.md for $GITHUB_REF"
 
-    - name: Push changes back to main branch using PAT
-      env:
-        GH_PAT: ${{ secrets.GH_PAT }}
-      run: |
-        git pull origin main  # Pull latest changes before pushing
-        git push https://$GH_PAT@github.com/${{ github.repository }} main  # Push using PAT
+            - name: Push changes back to main branch using PAT
+              env:
+                  GH_PAT: ${{ secrets.GH_PAT }}
+              run: |
+                  git pull origin main  # Pull latest changes before pushing
+                  git push https://$GH_PAT@github.com/${{ github.repository }} main  # Push using PAT
