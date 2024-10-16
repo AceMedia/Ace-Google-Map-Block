@@ -32,7 +32,10 @@ import './editor.scss';
 export default function Edit() {
 	return (
 		<p { ...useBlockProps() }>
-			{ __( 'Ace Map Block – hello from the editor!', 'acemedia-map-block' ) }
+			{ __(
+				'Ace Map Block – hello from the editor!',
+				'acemedia-map-block'
+			) }
 		</p>
 	);
 }

@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from '@wordpress/element';
 import { registerBlockType } from '@wordpress/blocks';
 import { InspectorControls, InnerBlocks, useBlockProps } from '@wordpress/block-editor';
+import { __ } from '@wordpress/i18n';
 import { PanelBody, TextControl, ToggleControl, RangeControl, SelectControl } from '@wordpress/components';
 
 const ALLOWED_BLOCKS = [ 'core/paragraph', 'core/heading', 'core/image' ];
 
 
 registerBlockType('acemedia/google-map', {
-    title: 'Google Map',
+    title: __('Google Map', 'acemedia-map-block'),
     icon: 'location-alt',
     category: 'widgets',
     attributes: {
@@ -301,47 +302,47 @@ registerBlockType('acemedia/google-map', {
         return (
             <>
                 <InspectorControls>
-    <PanelBody title="Map Settings">
+    <PanelBody title={__('Map Settings', 'acemedia-map-block')}>
         <TextControl 
-            label="Latitude" 
+            label={__('Latitude', 'acemedia-map-block')} 
             value={lat !== undefined ? lat : 51.5074} 
             onChange={(value) => setAttributes({ lat: parseFloat(value) })} 
         />
         <TextControl 
-            label="Longitude" 
+            label={__('Longitude', 'acemedia-map-block')} 
             value={lng !== undefined ? lng : -0.1278} 
             onChange={(value) => setAttributes({ lng: parseFloat(value) })} 
         />
         <TextControl 
-            label="Address" 
+            label={__('Address', 'acemedia-map-block')} 
             value={address} 
             disabled 
         />
         <ToggleControl
-            label="Show Marker"
+            label={__('Show Marker', 'acemedia-map-block')}
             checked={attributes.showMarker !== undefined ? attributes.showMarker : true}
             onChange={(value) => setAttributes({ showMarker: value })}
         />
         <RangeControl 
-            label="Zoom Level" 
+            label={__('Zoom Level', 'acemedia-map-block')} 
             value={zoom !== undefined ? zoom : 8} 
             onChange={(value) => setAttributes({ zoom: value })} 
             min={1} max={20} 
         />
         <ToggleControl 
-            label="Map as Image" 
+            label={__('Map as Image', 'acemedia-map-block')} 
             checked={mapIsImage !== undefined ? mapIsImage : false} 
             onChange={(value) => setAttributes({ mapIsImage: value })} 
         />
         <ToggleControl 
-            label="Map as Background" 
+            label={__('Map as Background', 'acemedia-map-block')} 
             checked={mapAsBackground !== undefined ? mapAsBackground : false} 
             onChange={(value) => setAttributes({ mapAsBackground: value })} 
         />
         {!mapIsImage && (
             <>
                 <ToggleControl 
-                    label="Is Street View?" 
+                    label={__('Is Street View?', 'acemedia-map-block')} 
                     checked={isStreetView !== undefined ? isStreetView : false} 
                     onChange={() => {
                         if (panorama) {
@@ -359,40 +360,40 @@ registerBlockType('acemedia/google-map', {
                 {isStreetView && (
                     <>
                         <TextControl 
-                            label="Street View Heading" 
+                            label={__('Street View Heading', 'acemedia-map-block')} 
                             value={streetViewHeading !== undefined ? streetViewHeading : 0} 
                             onChange={(value) => setAttributes({ streetViewHeading: parseFloat(value) })} 
                         />
                         <TextControl 
-                            label="Street View Pitch" 
+                            label={__('Street View Pitch', 'acemedia-map-block')} 
                             value={streetViewPitch !== undefined ? streetViewPitch : 0} 
                             onChange={(value) => setAttributes({ streetViewPitch: parseFloat(value) })} 
                         />
                     </>
                 )}
                 <SelectControl 
-                    label="Map Style" 
+                    label={__('Map Style', 'acemedia-map-block')} 
                     value={mapStyle !== undefined ? mapStyle : ''} 
-                    options={[{ label: 'Default', value: '' }, ...Object.keys(aceMapBlock.styles).map(style => ({ label: style, value: style }))]} 
+                    options={[{ label: __('Default', 'acemedia-map-block'), value: '' }, ...Object.keys(aceMapBlock.styles).map(style => ({ label: style, value: style }))]} 
                     onChange={(value) => setAttributes({ mapStyle: value })} 
                 />
                 <ToggleControl 
-                    label="Disable Map Movement" 
+                    label={__('Disable Map Movement', 'acemedia-map-block')} 
                     checked={disableMovement !== undefined ? disableMovement : !!aceMapBlockDefaults.disableMovement} 
                     onChange={(value) => setAttributes({ disableMovement: value })} 
                 />
                 <ToggleControl 
-                    label="Disable Zoom" 
+                    label={__('Disable Zoom', 'acemedia-map-block')} 
                     checked={disableZoom !== undefined ? disableZoom : !!aceMapBlockDefaults.disableZoom} 
                     onChange={(value) => setAttributes({ disableZoom: value })} 
                 />
                 <ToggleControl 
-                    label="Disable Labels" 
+                    label={__('Disable Labels', 'acemedia-map-block')} 
                     checked={disableLabels !== undefined ? disableLabels : !!aceMapBlockDefaults.disableLabels} 
                     onChange={(value) => setAttributes({ disableLabels: value })} 
                 />
                 <ToggleControl 
-                    label="Disable UI Buttons" 
+                    label={__('Disable UI Buttons', 'acemedia-map-block')} 
                     checked={disableUIButtons !== undefined ? disableUIButtons : !!aceMapBlockDefaults.disableUIButtons} 
                     onChange={(value) => setAttributes({ disableUIButtons: value })} 
                 />
@@ -417,7 +418,7 @@ registerBlockType('acemedia/google-map', {
     ref={searchRef}
     className="autocomplete-search"
     type="text"
-    placeholder="Search for a location"
+    placeholder={__('Search for a location', 'acemedia-map-block')}
     style={{
         width: '50%',
         padding: '8px',
@@ -490,7 +491,7 @@ registerBlockType('acemedia/google-map', {
         return mapIsImage ? (
             <img
                 src={`https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=${zoom}&size=600x400${showMarker ? `&markers=color:red%7C${lat},${lng}` : ''}&key=${aceMapBlock.apiKey}`}
-                alt="Google Map"
+                alt={__('Google Map', 'acemedia-map-block')}
             />
         ) : (
             <div style={{ position: 'relative', width: '100%', height: '600px' }}>
