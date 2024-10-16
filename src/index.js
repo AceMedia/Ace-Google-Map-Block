@@ -6,7 +6,7 @@ import { PanelBody, TextControl, ToggleControl, RangeControl, SelectControl } fr
 const ALLOWED_BLOCKS = [ 'core/paragraph', 'core/heading', 'core/image' ];
 
 
-registerBlockType('my-block/google-map', {
+registerBlockType('acemedia/google-map', {
     title: 'Google Map',
     icon: 'location-alt',
     category: 'widgets',

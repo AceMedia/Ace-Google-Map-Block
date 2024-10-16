@@ -8,7 +8,7 @@
  * Author:            Shane Rounce
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       ace-map-block
+ * Text Domain:       acemedia-map-block
  *
  * @package CreateBlock
  */
@@ -19,142 +19,142 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 // include_once plugin_dir_path( __FILE__ ) . 'update.php';
 
-function create_block_ace_map_block_block_init() {
+function create_blockacemedia_map_block_block_init() {
     register_block_type( __DIR__ . '/build' );
 }
-add_action( 'init', 'create_block_ace_map_block_block_init' );
+add_action( 'init', 'create_blockacemedia_map_block_block_init' );
 
-function ace_map_block_register_settings() {
+function acemedia_map_block_register_settings() {
     // Register settings
-    register_setting('ace_map_block_settings', 'ace_map_block_api_key');
-    register_setting('ace_map_block_settings', 'ace_map_block_default_city');
-    register_setting('ace_map_block_settings', 'ace_map_block_disable_zoom');
-    register_setting('ace_map_block_settings', 'ace_map_block_disable_labels');
-    register_setting('ace_map_block_settings', 'ace_map_block_disable_ui_buttons');
-    register_setting('ace_map_block_settings', 'ace_map_block_disable_movement');
+    register_setting('acemedia_map_block_settings', 'acemedia_map_block_api_key');
+    register_setting('acemedia_map_block_settings', 'acemedia_map_block_default_city');
+    register_setting('acemedia_map_block_settings', 'acemedia_map_block_disable_zoom');
+    register_setting('acemedia_map_block_settings', 'acemedia_map_block_disable_labels');
+    register_setting('acemedia_map_block_settings', 'acemedia_map_block_disable_ui_buttons');
+    register_setting('acemedia_map_block_settings', 'acemedia_map_block_disable_movement');
 
     // Section for API Key and Default City
     add_settings_section(
-        'ace_map_block_api_section', // Section ID
-        'API Settings',              // Section Title
+        'acemedia_map_block_api_section', // Section ID
+        __('API Settings', 'acemedia-map-block'), // Section Title
         '__return_false',            // Callback (optional, can be set to NULL or false)
-        'ace_map_block_settings'     // Page slug (matches form action target)
+        'acemedia_map_block_settings'     // Page slug (matches form action target)
     );
 
     // API Key field
     add_settings_field(
-        'ace_map_block_api_key',                  // Field ID
-        'Google Maps API Key',                    // Field Title
-        'ace_map_block_render_api_key_field',     // Callback to render the field
-        'ace_map_block_settings',                 // Page slug (same as form target)
-        'ace_map_block_api_section'               // Section ID
+        'acemedia_map_block_api_key',                  // Field ID
+        __('Google Maps API Key', 'acemedia-map-block'), // Field Title
+        'acemedia_map_block_render_api_key_field',     // Callback to render the field
+        'acemedia_map_block_settings',                 // Page slug (same as form target)
+        'acemedia_map_block_api_section'               // Section ID
     );
 
     // Default City field
     add_settings_field(
-        'ace_map_block_default_city',
-        'Default City',
-        'ace_map_block_render_default_city_field',
-        'ace_map_block_settings',
-        'ace_map_block_defaults_section'
+        'acemedia_map_block_default_city',
+        __('Default City', 'acemedia-map-block'),
+        'acemedia_map_block_render_default_city_field',
+        'acemedia_map_block_settings',
+        'acemedia_map_block_defaults_section'
     );
 
     // Section for Map Defaults
     add_settings_section(
-        'ace_map_block_defaults_section',
-        'Map Default Settings',
+        'acemedia_map_block_defaults_section',
+        __('Map Default Settings', 'acemedia-map-block'),
         '__return_false',
-        'ace_map_block_settings'
+        'acemedia_map_block_settings'
     );
 
     // Disable Zoom field
     add_settings_field(
-        'ace_map_block_disable_zoom',
-        'Disable Zoom',
-        'ace_map_block_render_disable_zoom_field',
-        'ace_map_block_settings',
-        'ace_map_block_defaults_section'
+        'acemedia_map_block_disable_zoom',
+        __('Disable Zoom', 'acemedia-map-block'),
+        'acemedia_map_block_render_disable_zoom_field',
+        'acemedia_map_block_settings',
+        'acemedia_map_block_defaults_section'
     );
 
     // Disable Labels field
     add_settings_field(
-        'ace_map_block_disable_labels',
-        'Disable Labels',
-        'ace_map_block_render_disable_labels_field',
-        'ace_map_block_settings',
-        'ace_map_block_defaults_section'
+        'acemedia_map_block_disable_labels',
+        __('Disable Labels', 'acemedia-map-block'),
+        'acemedia_map_block_render_disable_labels_field',
+        'acemedia_map_block_settings',
+        'acemedia_map_block_defaults_section'
     );
 
     // Disable UI Buttons field
     add_settings_field(
-        'ace_map_block_disable_ui_buttons',
-        'Disable UI Buttons',
-        'ace_map_block_render_disable_ui_buttons_field',
-        'ace_map_block_settings',
-        'ace_map_block_defaults_section'
+        'acemedia_map_block_disable_ui_buttons',
+        __('Disable UI Buttons', 'acemedia-map-block'),
+        'acemedia_map_block_render_disable_ui_buttons_field',
+        'acemedia_map_block_settings',
+        'acemedia_map_block_defaults_section'
     );
 
     // Disable Map Movement field
     add_settings_field(
-        'ace_map_block_disable_movement',
-        'Disable Map Movement',
-        'ace_map_block_render_disable_movement_field',
-        'ace_map_block_settings',
-        'ace_map_block_defaults_section'
+        'acemedia_map_block_disable_movement',
+        __('Disable Map Movement', 'acemedia-map-block'),
+        'acemedia_map_block_render_disable_movement_field',
+        'acemedia_map_block_settings',
+        'acemedia_map_block_defaults_section'
     );
 }
-add_action('admin_init', 'ace_map_block_register_settings');
+add_action('admin_init', 'acemedia_map_block_register_settings');
 
 // Render API Key field
-function ace_map_block_render_api_key_field() {
-    $api_key = get_option('ace_map_block_api_key');
-    echo '<input type="text" name="ace_map_block_api_key" value="' . esc_attr($api_key) . '" class="regular-text" />';
+function acemedia_map_block_render_api_key_field() {
+    $api_key = get_option('acemedia_map_block_api_key');
+    echo '<input type="text" name="acemedia_map_block_api_key" value="' . esc_attr($api_key) . '" class="regular-text" />';
 }
 
 // Render Default City field
-function ace_map_block_render_default_city_field() {
-    $default_city = get_option('ace_map_block_default_city');
-    echo '<input type="text" name="ace_map_block_default_city" value="' . esc_attr($default_city) . '" class="regular-text" />';
+function acemedia_map_block_render_default_city_field() {
+    $default_city = get_option('acemedia_map_block_default_city');
+    echo '<input type="text" name="acemedia_map_block_default_city" value="' . esc_attr($default_city) . '" class="regular-text" />';
 }
 
 // Render Disable Zoom field
-function ace_map_block_render_disable_zoom_field() {
-    $disable_zoom = get_option('ace_map_block_disable_zoom');
-    echo '<input type="checkbox" name="ace_map_block_disable_zoom" value="1" ' . checked(1, $disable_zoom, false) . ' />';
+function acemedia_map_block_render_disable_zoom_field() {
+    $disable_zoom = get_option('acemedia_map_block_disable_zoom');
+    echo '<input type="checkbox" name="acemedia_map_block_disable_zoom" value="1" ' . checked(1, $disable_zoom, false) . ' />';
 }
 
 // Render Disable Labels field
-function ace_map_block_render_disable_labels_field() {
-    $disable_labels = get_option('ace_map_block_disable_labels');
-    echo '<input type="checkbox" name="ace_map_block_disable_labels" value="1" ' . checked(1, $disable_labels, false) . ' />';
+function acemedia_map_block_render_disable_labels_field() {
+    $disable_labels = get_option('acemedia_map_block_disable_labels');
+    echo '<input type="checkbox" name="acemedia_map_block_disable_labels" value="1" ' . checked(1, $disable_labels, false) . ' />';
 }
 
 // Render Disable UI Buttons field
-function ace_map_block_render_disable_ui_buttons_field() {
-    $disable_ui_buttons = get_option('ace_map_block_disable_ui_buttons');
-    echo '<input type="checkbox" name="ace_map_block_disable_ui_buttons" value="1" ' . checked(1, $disable_ui_buttons, false) . ' />';
+function acemedia_map_block_render_disable_ui_buttons_field() {
+    $disable_ui_buttons = get_option('acemedia_map_block_disable_ui_buttons');
+    echo '<input type="checkbox" name="acemedia_map_block_disable_ui_buttons" value="1" ' . checked(1, $disable_ui_buttons, false) . ' />';
 }
 
 // Render Disable Map Movement field
-function ace_map_block_render_disable_movement_field() {
-    $disable_movement = get_option('ace_map_block_disable_movement');
-    echo '<input type="checkbox" name="ace_map_block_disable_movement" value="1" ' . checked(1, $disable_movement, false) . ' />';
+function acemedia_map_block_render_disable_movement_field() {
+    $disable_movement = get_option('acemedia_map_block_disable_movement');
+    echo '<input type="checkbox" name="acemedia_map_block_disable_movement" value="1" ' . checked(1, $disable_movement, false) . ' />';
 }
 
 
-function ace_map_block_add_admin_menu() {
-    add_options_page('Google Maps Block Settings', 'Google Maps Block', 'manage_options', 'ace-map-block-settings', 'ace_map_block_settings_page');
+function acemedia_map_block_add_admin_menu() {
+    add_options_page(__('Google Maps Block Settings', 'acemedia-map-block'), __('Google Maps Block', 'acemedia-map-block'), 'manage_options', 'acemedia-map-block-settings', 'acemedia_map_block_settings_page');
 }
-add_action('admin_menu', 'ace_map_block_add_admin_menu');
+add_action('admin_menu', 'acemedia_map_block_add_admin_menu');
 
-function ace_map_block_settings_page() {
+function acemedia_map_block_settings_page() {
     ?>
     <div class="wrap">
-        <h1>Google Maps Block Settings</h1>
+        <h1><?php _e('Google Maps Block Settings', 'acemedia-map-block'); ?></h1>
         <form method="post" action="options.php">
             <?php
-            settings_fields('ace_map_block_settings');
-            do_settings_sections('ace_map_block_settings'); // This outputs all sections and their fields
+            settings_fields('acemedia_map_block_settings');
+            do_settings_sections('acemedia_map_block_settings'); // This outputs all sections and their fields
             submit_button();
             ?>
         </form>
@@ -164,12 +164,12 @@ function ace_map_block_settings_page() {
 
 
 
-function ace_map_block_enqueue_google_maps_scripts($is_editor = false) {
-    $api_key = get_option('ace_map_block_api_key');
-    $disable_zoom = get_option('ace_map_block_disable_zoom');
-    $disable_labels = get_option('ace_map_block_disable_labels');
-    $disable_ui_buttons = get_option('ace_map_block_disable_ui_buttons');
-    $disable_movement = get_option('ace_map_block_disable_movement');
+function acemedia_map_block_enqueue_google_maps_scripts($is_editor = false) {
+    $api_key = get_option('acemedia_map_block_api_key');
+    $disable_zoom = get_option('acemedia_map_block_disable_zoom');
+    $disable_labels = get_option('acemedia_map_block_disable_labels');
+    $disable_ui_buttons = get_option('acemedia_map_block_disable_ui_buttons');
+    $disable_movement = get_option('acemedia_map_block_disable_movement');
 
     if ($api_key) {
         $url = 'https://maps.googleapis.com/maps/api/js?key=' . esc_attr($api_key) . '&libraries=places'; // Ensure this is loaded only once
@@ -182,11 +182,11 @@ function ace_map_block_enqueue_google_maps_scripts($is_editor = false) {
             true
         );
     } else {
-        error_log('Google Maps API key is not set.');
+        error_log(__('Google Maps API key is not set.', 'acemedia-map-block'));
         return;
     }
 
-    $script_handle = $is_editor ? 'ace-map-block-editor-js' : 'ace-map-block-frontend';
+    $script_handle = $is_editor ? 'acemedia-map-block-editor-js' : 'acemedia-map-block-frontend';
     $script_file = $is_editor ? 'build/index.js' : 'build/view.js';
     $dependencies = $is_editor ? array('wp-blocks', 'wp-element', 'wp-editor') : array('google-maps-api');
     
@@ -202,10 +202,10 @@ function ace_map_block_enqueue_google_maps_scripts($is_editor = false) {
         $script_handle,
         'aceMapBlockDefaults',
         array(
-            'disableZoom' => (bool) get_option('ace_map_block_disable_zoom', false),
-            'disableLabels' => (bool) get_option('ace_map_block_disable_labels', false),
-            'disableUIButtons' => (bool) get_option('ace_map_block_disable_ui_buttons', false),
-            'disableMovement' => (bool) get_option('ace_map_block_disable_movement', false),
+            'disableZoom' => (bool) get_option('acemedia_map_block_disable_zoom', false),
+            'disableLabels' => (bool) get_option('acemedia_map_block_disable_labels', false),
+            'disableUIButtons' => (bool) get_option('acemedia_map_block_disable_ui_buttons', false),
+            'disableMovement' => (bool) get_option('acemedia_map_block_disable_movement', false),
         )
     );
 
@@ -239,15 +239,15 @@ function ace_map_block_enqueue_google_maps_scripts($is_editor = false) {
 
 
 add_action('enqueue_block_editor_assets', function() {
-    ace_map_block_enqueue_google_maps_scripts(true);
+    acemedia_map_block_enqueue_google_maps_scripts(true);
 });
 
-add_action('wp_enqueue_scripts', 'ace_map_block_enqueue_google_maps_scripts');
+add_action('wp_enqueue_scripts', 'acemedia_map_block_enqueue_google_maps_scripts');
 
 
-function ace_map_block_traverse_blocks( $blocks, &$maps_data ) {
+function acemedia_map_block_traverse_blocks( $blocks, &$maps_data ) {
     foreach ( $blocks as $block ) {
-        if ( 'my-block/google-map' === $block['blockName'] ) { // Correct block name
+        if ( 'acemedia/google-map' === $block['blockName'] ) { // Correct block name
             // Extract block attributes, prioritize block-level settings over global defaults
             $attributes = $block['attrs'];
 
@@ -261,10 +261,10 @@ function ace_map_block_traverse_blocks( $blocks, &$maps_data ) {
                 'isStreetView' => isset( $attributes['isStreetView'] ) ? (bool) $attributes['isStreetView'] : false,
                 'streetViewHeading' => isset( $attributes['streetViewHeading'] ) ? $attributes['streetViewHeading'] : 0,
                 'streetViewPitch' => isset( $attributes['streetViewPitch'] ) ? $attributes['streetViewPitch'] : 0,
-                'disableMovement' => isset( $attributes['disableMovement'] ) ? (bool) $attributes['disableMovement'] : (bool)get_option( 'ace_map_block_disable_movement', true ),
-                'disableZoom' => isset( $attributes['disableZoom'] ) ? (bool) $attributes['disableZoom'] : (bool)get_option( 'ace_map_block_disable_zoom', false ),
-                'disableLabels' => isset( $attributes['disableLabels'] ) ? (bool) $attributes['disableLabels'] : (bool)get_option( 'ace_map_block_disable_labels', false ),
-                'disableUIButtons' => isset( $attributes['disableUIButtons'] ) ? (bool) $attributes['disableUIButtons'] : (bool)get_option( 'ace_map_block_disable_ui_buttons', true ),
+                'disableMovement' => isset( $attributes['disableMovement'] ) ? (bool) $attributes['disableMovement'] : (bool)get_option( 'acemedia_map_block_disable_movement', true ),
+                'disableZoom' => isset( $attributes['disableZoom'] ) ? (bool) $attributes['disableZoom'] : (bool)get_option( 'acemedia_map_block_disable_zoom', false ),
+                'disableLabels' => isset( $attributes['disableLabels'] ) ? (bool) $attributes['disableLabels'] : (bool)get_option( 'acemedia_map_block_disable_labels', false ),
+                'disableUIButtons' => isset( $attributes['disableUIButtons'] ) ? (bool) $attributes['disableUIButtons'] : (bool)get_option( 'acemedia_map_block_disable_ui_buttons', true ),
                 'mapIsImage' => isset( $attributes['mapIsImage'] ) ? (bool) $attributes['mapIsImage'] : false,
                 'mapAsBackground' => isset( $attributes['mapAsBackground'] ) ? (bool) $attributes['mapAsBackground'] : false,
                 'showMarker' => isset( $attributes['showMarker'] ) ? (bool) $attributes['showMarker'] : true,
@@ -276,12 +276,12 @@ function ace_map_block_traverse_blocks( $blocks, &$maps_data ) {
 
         // If there are inner blocks, recursively traverse them
         if ( ! empty( $block['innerBlocks'] ) ) {
-            ace_map_block_traverse_blocks( $block['innerBlocks'], $maps_data );
+            acemedia_map_block_traverse_blocks( $block['innerBlocks'], $maps_data );
         }
     }
 }
 
-function ace_map_block_save_post( $post_id ) {
+function acemedia_map_block_save_post( $post_id ) {
     // Check if the post is valid and not autosaving
     if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
         return;
@@ -297,39 +297,39 @@ function ace_map_block_save_post( $post_id ) {
     $blocks = parse_blocks( $post_content );
 
     $maps_data = array();
-    ace_map_block_traverse_blocks( $blocks, $maps_data ); // Traverse the blocks
+    acemedia_map_block_traverse_blocks( $blocks, $maps_data ); // Traverse the blocks
 
     // Save the map data as post meta
     if ( ! empty( $maps_data ) ) {
-        update_post_meta( $post_id, '_ace_google_map_data', $maps_data );
+        update_post_meta( $post_id, 'acemedia_google_map_data', $maps_data );
     } else {
-        delete_post_meta( $post_id, '_ace_google_map_data' ); // Clean up if no maps exist
+        delete_post_meta( $post_id, 'acemedia_google_map_data' ); // Clean up if no maps exist
     }
 }
 
 
-add_action('save_post', 'ace_map_block_save_post');
+add_action('save_post', 'acemedia_map_block_save_post');
 
 
 
-add_action('rest_api_init', 'ace_map_block_register_rest_route');
+add_action('rest_api_init', 'acemedia_map_block_register_rest_route');
 
-function ace_map_block_register_rest_route() {
-    register_rest_route('ace-map/v1', '/maps/(?P<id>\d+)', array(
+function acemedia_map_block_register_rest_route() {
+    register_rest_route('acemap/v1', '/(?P<id>\d+)', array(
         'methods' => 'GET',
-        'callback' => 'ace_map_block_get_maps_data',
-        'permission_callback' => '__return_true', // Make this publicly accessible
+        'callback' => 'acemedia_map_block_get_maps_data',
+        'permission_callback' => '__return_true', // Publicly accessible
     ));
 
     // New route for listing all posts with map data
-    register_rest_route('ace-map/v1', '/maps', array(
+    register_rest_route('acemap/v1', '/all', array(
         'methods' => 'GET',
-        'callback' => 'ace_map_block_get_maps_data',
+        'callback' => 'acemedia_map_block_get_maps_data',
         'permission_callback' => '__return_true', // Make this publicly accessible
     ));
 }
 
-function ace_map_process_maps_data( &$maps_data ) {
+function acemedia_map_process_maps_data( &$maps_data ) {
     foreach ( $maps_data as &$map ) {
         if ( ! empty( $map['isStreetView'] ) ) {
             // Unset unnecessary fields for Street View API response
@@ -344,7 +344,7 @@ function ace_map_process_maps_data( &$maps_data ) {
 
         if ( ! empty( $map['mapIsImage'] ) ) {
             // Build the static map image URL
-            $api_key = get_option( 'ace_map_block_api_key' );
+            $api_key = get_option( 'acemedia_map_block_api_key' );
 
             $map['imageUrl'] = sprintf(
                 'https://maps.googleapis.com/maps/api/staticmap?center=%s,%s&zoom=%d&size=600x400&key=%s%s',
@@ -368,7 +368,7 @@ function ace_map_process_maps_data( &$maps_data ) {
     }
 }
 
-function ace_map_block_get_maps_data( $data ) {
+function acemedia_map_block_get_maps_data( $data ) {
     // Check if a post ID is provided in the request
     $post_id = isset( $data['id'] ) ? (int) $data['id'] : null;
 
@@ -379,7 +379,7 @@ function ace_map_block_get_maps_data( $data ) {
             'post_type' => 'any', // Or specify your custom post type
             'meta_query' => array(
                 array(
-                    'key'     => '_ace_google_map_data', // The meta key for map data
+                    'key'     => 'acemedia_google_map_data', // The meta key for map data
                     'compare' => 'EXISTS', // Ensures only posts with map data are returned
                 ),
             ),
@@ -390,11 +390,11 @@ function ace_map_block_get_maps_data( $data ) {
 
         // Loop through each post
         foreach ( $posts as $post ) {
-            $maps_data = get_post_meta( $post->ID, '_ace_google_map_data', true );
+            $maps_data = get_post_meta( $post->ID, 'acemedia_google_map_data', true );
 
             if ( ! empty( $maps_data ) ) {
                 // Process map data to remove unnecessary fields
-                ace_map_process_maps_data( $maps_data );
+                acemedia_map_process_maps_data( $maps_data );
 
                 // Prepare the response data for each post
                 $response[] = array(
@@ -408,24 +408,22 @@ function ace_map_block_get_maps_data( $data ) {
 
         // If no posts with maps found, return a WP_Error
         if ( empty( $response ) ) {
-            return new WP_Error( 'no_maps', 'No posts with map data found', array( 'status' => 404 ) );
+            return new WP_Error( 'no_maps', __('No posts with map data found', 'acemedia-map-block'), array( 'status' => 404 ) );
         }
 
         return rest_ensure_response( $response );
     }
 
     // Handle single post data if a post ID is provided
-    $maps_data = get_post_meta( $post_id, '_ace_google_map_data', true );
+    $maps_data = get_post_meta( $post_id, 'acemedia_google_map_data', true );
 
-    print_r($maps_data);    
 
     if ( empty( $maps_data ) ) {
-        return new WP_Error( 'no_maps', 'No map data found', array( 'status' => 404 ) );
+        return new WP_Error( 'no_maps', __('No map data found', 'acemedia-map-block'), array( 'status' => 404 ) );
     }
 
     // Process the map data to remove unnecessary fields
-    ace_map_process_maps_data( $maps_data );
+    acemedia_map_process_maps_data( $maps_data );
 
     return rest_ensure_response( $maps_data );
 }
-

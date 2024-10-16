@@ -2,7 +2,7 @@
 
 // Check for plugin updates
 function ace_check_for_plugin_update( $transient ) {
-    $plugin_slug = 'Ace-Google-Map-Block';
+    $plugin_slug = 'acemedia-Google-Map-Block';
     $plugin_data = get_plugin_data( __FILE__ );
     $current_version = $plugin_data['Version'];
     
@@ -56,16 +56,16 @@ function ace_check_for_plugin_update( $transient ) {
     
     return $transient;
 }
-add_filter( 'pre_set_site_transient_update_plugins', 'ace_check_for_plugin_update' );
+add_filter( 'pre_set_site_transient_update_plugins', 'acemedia_check_for_plugin_update' );
 
 // Display plugin update info
 function ace_plugin_update_info( $false, $action, $response ) {
-    if ( isset( $response->slug ) && $response->slug === 'Ace-Google-Map-Block' ) {
+    if ( isset( $response->slug ) && $response->slug === 'acemedia-Google-Map-Block' ) {
         $response->tested = '6.7';
         $response->requires = '5.6';
         $response->requires_php = '7.4';
     }
     return $false;
 }
-add_filter( 'plugins_api', 'ace_plugin_update_info', 10, 3 );
+add_filter( 'plugins_api', 'acemedia_plugin_update_info', 10, 3 );
 
