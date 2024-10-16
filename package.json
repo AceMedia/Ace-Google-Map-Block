@@ -16,5 +16,11 @@
 	},
 	"devDependencies": {
 		"@wordpress/scripts": "^30.1.0"
-	}
+	},
+	"files": [
+	"README.md",
+	"CHANGELOG.md",
+	"ace-map-block.php",
+	"assets/"
+	]
 }
