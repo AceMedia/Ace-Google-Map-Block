@@ -1,68 +1,75 @@
-***Ace Map Block***
+# Ace Google Map Block
 
-Contributors:      Shane Rounce of AceMedia.ninja 
+An interactive Google Maps block for the WordPress block editor, with Street View and Places search.
 
-Tags:              block, map, google, street view, places, wordpress, gutenberg
+By Shane Rounce / AceMedia.
 
-Tested up to:      6.6 
+## Features
 
-Stable tag:        1.0.0 
+- Interactive map inside the block editor, with a droppable marker and editable latitude, longitude and address.
+- Google Places Autocomplete search; the address field updates from a chosen place or from reverse geocoding a map click.
+- Street View toggle with heading and pitch controls.
+- Zoom level, show marker, map style, "Map as Image" and "Map as Background" options per block.
+- Per-block switches to disable map movement, zoom and labels.
+- Site-wide defaults and your Google Maps API key on a settings page.
 
+## Requirements
 
-Interactive Google Maps block with Street View and Places Autocomplete, fully integrated within the WordPress block editor.
+- WordPress 6.6 or later
+- PHP 7.2 or later
+- A Google Maps API key (Maps JavaScript, Places and Street View access enabled in your Google Cloud project)
 
-**Description**
+## Installation
 
-Ace Map Block allows you to embed customizable Google Maps into the WordPress block editor, providing full integration with Google Places Autocomplete, map pins, and Google Street View. It is perfect for creating interactive, location-based content with real-time search, map, and street view features.
+### From a release (recommended)
 
-**Features include:**
-- Adding fully interactive Google Maps directly inside the block editor.
-- Droppable pins with customizable latitude and longitude.
-- Toggleable Street View with heading and pitch customization.
-- Real-time location search with Google Places Autocomplete.
-- Automatically updates address field from selected place or reverse geocoded map clicks.
+1. Download the zip from the [latest GitHub Release](https://github.com/AceMedia/Ace-Google-Map-Block/releases/latest).
+2. In WordPress go to **Plugins > Add New > Upload Plugin**, choose the zip and click **Install Now**.
+3. Click **Activate**.
 
-Ace Map Block integrates seamlessly into the block editor, allowing users to customize map settings, switch between map and street view, and update the map pin’s location with ease.
+The plugin also contains an `update.php` that checks this repository's latest GitHub Release for new versions.
 
-**Installation**
+### From source
 
-This section describes how to install the plugin and get it working.
+```bash
+git clone https://github.com/AceMedia/Ace-Google-Map-Block.git
+cd Ace-Google-Map-Block
+npm install
+npm run build
+npm run plugin-zip
+```
 
-1. Upload the plugin files to the `/wp-content/plugins/acemedia-map-block` directory, or install the plugin through the WordPress plugins screen directly.
-2. Activate the plugin through the 'Plugins' screen in WordPress.
+Upload the generated zip, or copy the folder into `wp-content/plugins/` and activate it. Note that `npm run build` moves the compiled output into `assets/`.
 
-**Frequently Asked Questions**
+## Usage
 
-*How do I add a map to my page?*
+1. Go to **Settings > Google Maps Block** and enter your API key.
+2. Edit a post or page and add the **Ace Map Block** (block name `acemedia/google-map`).
+3. Search for a place or set the coordinates, then adjust options in the block inspector. Use "Is Street View?" to switch to Street View.
 
-Simply add the "Ace Map Block" from the block editor. You can customize the map's location, pin, and toggle Street View using the block inspector.
+## Configuration
 
-*Can I search for places on the map?*
+Under **Settings > Google Maps Block**: Google Maps API Key, Default City, and map defaults Disable Zoom, Disable Labels, Disable UI Buttons and Disable Map Movement.
 
-Yes, the plugin integrates Google Places Autocomplete, allowing you to search for locations in real-time. The map will automatically update based on your selected place.
+## Development
 
-*How does Street View work?*
+```bash
+npm install
+npm start          # watch
+npm run build      # build and move output to assets/
+npm run watch-css
+npm run lint:js
+npm run lint:css
+npm run format
+npm run plugin-zip
+```
 
-You can toggle between map view and Street View using the "Is Street View?" toggle in the block inspector. Alternatively, you can drop the yellow man on the map to switch to Street View directly.
+## Changelog
 
-*Does the address field update automatically?*
+See [CHANGELOG.md](CHANGELOG.md).
 
-Yes, the address field is automatically updated based on either the selected Places result or the location clicked on the map (using reverse geocoding).
+## Licence
 
-**Screenshots**
+GPL-2.0-or-later. See [LICENSE](LICENSE) and <https://www.gnu.org/licenses/gpl-2.0.html>.
 
-1. Block editor interface with Ace Map Block and inspector settings.
-2. Example of map and pin added to a post or page with Street View enabled.
-
-**Changelog**
-
-*0.420*
-* Initial release of Ace Map Block.
-* Integrated Google Maps block with customizable pins and real-time location search.
-* Support for Google Street View with heading and pitch customization.
-* Places Autocomplete integration for location search.
-* Automatic address updates using Places or reverse geocoding.
-
-**Advanced use**
-
-For advanced users, Ace Map Block includes reverse geocoding and manual pin dropping to update map locations dynamically within the editor. Perfect for location-based websites that need customizable map and Street View integration directly in WordPress.
+Author: Shane Rounce / AceMedia. Repository: <https://github.com/AceMedia/Ace-Google-Map-Block>
